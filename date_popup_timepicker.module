@@ -1,0 +1,95 @@
+<?php
+/**
+ * @file
+ * Date popup timepicker.
+ */
+
+/**
+ * Implements hook_element_info_alter().
+ */
+function date_popup_timepicker_element_info_alter(&$type) {
+  // #timepicker property contains value of the date_popup_timepicker variable.
+  // @see date_popup_timepicker_form_date_popup_settings_alter()
+  if ($type['date_popup']['#timepicker'] == 'timepicker') {
+    $type['date_popup']['#process'][] = 'date_popup_timepicker_date_popup_element_process';
+  }
+}
+
+/**
+ * Process callback for the date_popup elements.
+ *
+ * @see date_popup_timepicker_element_info_alter()
+ */
+function date_popup_timepicker_date_popup_element_process($element, &$form_state, $form) {
+  // No reason to add timepicker if time part is not collected.
+  if (!empty($element['time'])) {
+    // #id should be there...
+    $id = $element['time']['#id'];
+    $func = 'date_popup_timepicker';
+    $settings = array();
+    $js_settings = array();
+    $js_settings['datePopup'][$id] = array(
+      'func' => $func,
+      'settings' => $settings,
+    );
+    // Override default settings to process on js side.
+    // @see date_popup_process_time_part()
+    // @see date_popup_js_settings_id()
+    drupal_add_js($js_settings, 'setting');
+
+    $element['#attached']['library'][] = array('system', 'ui.core');
+    $element['#attached']['library'][] = array('system', 'ui.widget');
+
+    // Add Timepicker library.
+    $element['#attached']['libraries_load'][] = array('timepicker');
+    $element['#attached']['js'][] = drupal_get_path('module', 'date_popup_timepicker') . "/js/date_popup_timepicker.js";
+  }
+  return $element;
+}
+
+/**
+ * Implements hook_libraries_info().
+ */
+function date_popup_timepicker_libraries_info() {
+  $libraries['timepicker'] = array(
+    'name' => 'jQuery UI Timepicker',
+    'vendor url' => 'https://fgelinas.com/code/timepicker',
+    'download url' => 'https://fgelinas.com/code/timepicker/releases/jquery-ui-timepicker-0.3.3.zip',
+    'version arguments' => array(
+      'file' => 'jquery.ui.timepicker.js',
+      'pattern' => '/version\: \"(\d\.\d.\d)\"/',
+      'lines' => 43,
+    ),
+    'files' => array(
+      'js' => array(
+        'jquery.ui.timepicker.js',
+      ),
+      'css' => array(
+        'jquery.ui.timepicker.css',
+      ),
+    ),
+    'variants' => array(
+      'source' => array(
+        'files' => array(
+          'js' => array(
+            'jquery.ui.timepicker.js',
+          ),
+          'css' => array(
+            'jquery.ui.timepicker.css',
+          ),
+        ),
+      ),
+    ),
+  );
+
+  return $libraries;
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ *
+ * Alter date_popup_settings form.
+ */
+function date_popup_timepicker_form_date_popup_settings_alter(&$form, &$form_state) {
+  $form['date_popup_timepicker']['#options']['timepicker'] = t("jQuery UI Timepicker");
+}
