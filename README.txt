@@ -37,7 +37,8 @@ This module requires the following modules:
 
 INSTALLATION
 ------------
- * Dowload jQuery UI Timepicker (By François Gélinas) library
+
+ * Download jQuery UI Timepicker (By François Gélinas) library
    https://fgelinas.com/code/timepicker/#get_timepicker and put its content to
    "timepicker" directory inside libraries directory
    (usually sites/all/libraries) so you should have
@@ -58,9 +59,10 @@ CONFIGURATION
 
 MAINTAINERS
 -----------
+
 Current maintainers:
  * develnk - https://www.drupal.org/u/develnk
- * antongp - https://www.drupal.org/u/antongp
+ * Anton Shubkin (antongp) - https://www.drupal.org/u/antongp
 
 
 This project is created by ADCI Solutions team (http://drupal.org/node/1542952).
