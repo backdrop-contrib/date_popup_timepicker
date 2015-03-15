@@ -1,19 +1,68 @@
-About Date Popup Timepicker for Drupal
---------------------------------------------------------------------------------
-This module extends date_popup module and allows to use jQuery UI Timepicker
-for "time" part of date_time field.
---------------------------------------------------------------------------------
+CONTENTS OF THIS FILE
+---------------------
 
-Required Modules
---------------------------------------------------------------------------------
-* Libraries           - http://drupal.org/project/libraries
-* Date -> Date Popup  - http://drupal.org/project/date
---------------------------------------------------------------------------------
+ * Introduction
+ * Requirements
+ * Installation
+ * Configuration
+ * Maintainers
 
-Installation and configuration
---------------------------------------------------------------------------------
-1. Enable this module together required modules.
-2. Download library from https://fgelinas.com/code/timepicker/releases/jquery-ui-timepicker-0.3.3.zip unzip it and put
-into  /sites/all/libraries/timepicker
-3. Enable timepicker on /admin/config/date/date_popup. In field "Timepicker" choose "jQuery UI Timepicker"
-Now on all fields of type date_time in part "time" will call "jQuery UI Timepicker" plugin.
+
+INTRODUCTION
+------------
+
+The Date Popup Timepicker module adds one more timepicker option for elements
+of date_popup type and date_popup widgets for date fields provided by the Date
+module (https://www.drupal.org/project/date). It uses jQuery UI Timepicker
+(By François Gélinas) timepicker library, and provided widget looks very similar
+to core's jQuery UI Datepicker widget shipped with Drupal core and utilized by
+the Date module.
+
+
+ * For a full description of the module, visit the project page:
+   https://www.drupal.org/project/date_popup_timepicker
+
+
+ * To submit bug reports and feature suggestions, or to track changes:
+   https://www.drupal.org/project/issues/date_popup_timepicker
+
+
+REQUIREMENTS
+------------
+
+This module requires the following modules:
+ * Date Popup, part of the Date module (https://www.drupal.org/project/date)
+ * Libraries (https://www.drupal.org/project/libraries)
+
+
+INSTALLATION
+------------
+
+ * Download jQuery UI Timepicker (By François Gélinas) library
+   https://fgelinas.com/code/timepicker/#get_timepicker and put its content to
+   "timepicker" directory inside libraries directory
+   (usually sites/all/libraries) so you should have
+   sites/all/libraries/timepicker directory and jquery.ui.timepicker.js and
+   jquery.ui.timepicker.css in it.
+   See https://www.drupal.org/node/1440066 for more details.
+
+ * Install as you would normally install a contributed Drupal module. See:
+   https://drupal.org/documentation/install/modules-themes/modules-7
+   for further information.
+
+
+CONFIGURATION
+-------------
+
+ * Choose "jQuery UI Timepicker" option in Configuration » Date API » Date Popup
+
+
+MAINTAINERS
+-----------
+
+Current maintainers:
+ * develnk - https://www.drupal.org/u/develnk
+ * Anton Shubkin (antongp) - https://www.drupal.org/u/antongp
+
+
+This project is created by ADCI Solutions team (http://drupal.org/node/1542952).

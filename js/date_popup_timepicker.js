@@ -1,14 +1,10 @@
 (function($) {
   Drupal.behaviors.DatePopupTimepicker = {
     attach: function(context, settings) {
-      for (var id in Drupal.settings.datePopup) {
-        if (Drupal.settings.datePopup[id].func == 'timepickerPopup') {
-          // TODO convert Drupal.settings.datePopup[id].settings to array and use it in settings timepicker
-            $('#'+ id).timepicker({
-              showPeriod: Drupal.settings.datePopup[id].settings.showPeriod,
-              hourText: Drupal.settings.datePopup[id].settings.hourText,
-              minuteText: Drupal.settings.datePopup[id].settings.minuteText
-            });
+      for (var id in settings.datePopup) {
+        // @todo Do we need to use .once() here? date_popup doesn't use it for some reason.
+        if (settings.datePopup[id].func === 'date_popup_timepicker') {
+          $('#'+ id, context).once('date-popup-timepicker').timepicker();
         }
       }
     }
