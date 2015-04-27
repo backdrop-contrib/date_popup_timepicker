@@ -4,4 +4,5 @@ core = 7.x
 package = Date/Time
 dependencies[] = libraries
 dependencies[] = date_popup
+dependencies[] = ctools
 configure = admin/config/date/date_popup

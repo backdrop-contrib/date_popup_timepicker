@@ -5,6 +5,26 @@
  */
 
 /**
+ * Implements hook_ctools_plugin().
+ */
+function date_popup_timepicker_ctools_plugin_type() {
+  $plugins = array();
+  $plugins['timepicker'] = array(
+    'cache' => TRUE,
+  );
+  return $plugins;
+}
+
+/**
+ * Implements hook_ctool_plugin_directory().
+ */
+function date_popup_timepicker_ctools_plugin_directory($module, $plugin) {
+  if ($module == 'date_popup_timepicker') {
+    return 'plugins/' . $plugin;
+  }
+}
+
+/**
  * Implements hook_element_info_alter().
  */
 function date_popup_timepicker_element_info_alter(&$type) {
@@ -27,32 +47,31 @@ function date_popup_timepicker_date_popup_element_process($element, &$form_state
   // No reason to add timepicker if time part is not collected.
   // Also check if used timepicker is module's timepicker (we can't check this
   // in hook_element_info_alter() implementation because of caching).
-  if (!empty($element['time']) && $element['#timepicker'] == 'timepicker') {
+  if (!empty($element['time']) && ($handler = date_popup_timepicker_get_timepicker_handler($element['#timepicker']))) {
+    $name = $element['#timepicker'];
+    // Date field widgets contain #field property.
+    // It would be nice to use hook_field_widget_WIDGET_TYPE_form_alter()
+    // implementation to extend #timepicker_options via implementation,
+    // but unfortunately date expand widget
+    // @see date_combo_element_process().
+//    if (isset($element['#field']) && !empty($element['#field']['settings']['date_popup_timepicker'][$name]['timepicker_options'])) {
+//      // @todo drupal_array_merge_deep() may be not the best option here...
+//      $element['#timepicker_options'] = drupal_array_merge_deep($element['#field']['settings']['date_popup_timepicker'][$name]['timepicker_options'], $element['#timepicker_options']);
+//    }
+
+    $element = $handler->processElement($element, $form_state, $form);
+
     // #id should be there...
     $id = $element['time']['#id'];
-
-    $granularity = date_popup_time_granularity($element);
-    $settings_default = array(
-      'showHours' => in_array('hour', $granularity),
-      'showMinutes' => in_array('minute', $granularity),
-    );
-    $settings = drupal_array_merge_deep($settings_default, $element['#timepicker_options']);
     $js_settings = array();
     $js_settings['datePopup'][$id] = array(
-      'func' => 'date_popup_timepicker',
-      'settings' => $settings,
+      'func' => 'date_popup_timepicker__' . $name,
+      'settings' => $element['#timepicker_options'],
     );
     // Override default settings to process on js side.
     // @see date_popup_process_time_part()
     // @see date_popup_js_settings_id()
     drupal_add_js($js_settings, 'setting');
-
-    $element['#attached']['library'][] = array('system', 'ui.core');
-    $element['#attached']['library'][] = array('system', 'ui.widget');
-
-    // Add Timepicker library.
-    $element['#attached']['libraries_load'][] = array('timepicker');
-    $element['#attached']['js'][] = drupal_get_path('module', 'date_popup_timepicker') . "/js/date_popup_timepicker.js";
   }
   return $element;
 }
@@ -61,37 +80,16 @@ function date_popup_timepicker_date_popup_element_process($element, &$form_state
  * Implements hook_libraries_info().
  */
 function date_popup_timepicker_libraries_info() {
-  $libraries['timepicker'] = array(
-    'name' => 'jQuery UI Timepicker',
-    'vendor url' => 'https://fgelinas.com/code/timepicker',
-    'download url' => 'https://fgelinas.com/code/timepicker/releases/jquery-ui-timepicker-0.3.3.zip',
-    'version arguments' => array(
-      'file' => 'jquery.ui.timepicker.js',
-      'pattern' => '/version\: \"(\d\.\d.\d)\"/',
-      'lines' => 43,
-    ),
-    'files' => array(
-      'js' => array(
-        'jquery.ui.timepicker.js',
-      ),
-      'css' => array(
-        'jquery.ui.timepicker.css',
-      ),
-    ),
-    'variants' => array(
-      'source' => array(
-        'files' => array(
-          'js' => array(
-            'jquery.ui.timepicker.js',
-          ),
-          'css' => array(
-            'jquery.ui.timepicker.css',
-          ),
-        ),
-      ),
-    ),
-  );
-
+  ctools_include('plugins');
+  $libraries = array();
+  $timepickers = date_popup_timepicker_get_timepicker_plugins();
+  foreach ($timepickers as $name => $info) {
+    $class = ctools_plugin_get_class($info, 'handler');
+    if (method_exists($class, 'librariesInfo')) {
+      $handler = new $class();
+      $libraries = array_merge($libraries, $handler->librariesInfo());
+    }
+  }
   return $libraries;
 }
 
@@ -101,5 +99,55 @@ function date_popup_timepicker_libraries_info() {
  * Alter date_popup_settings form.
  */
 function date_popup_timepicker_form_date_popup_settings_alter(&$form, &$form_state) {
-  $form['date_popup_timepicker']['#options']['timepicker'] = t("jQuery UI Timepicker");
+  $timepickers = date_popup_timepicker_get_timepicker_plugins();
+  foreach ($timepickers as $name => $info) {
+    $form['date_popup_timepicker']['#options'][$name] = $info['title'];
+  }
+}
+
+/**
+ * Implements hook_date_field_settings_form_alter().
+ * 
+ * @see _date_field_widget_settings_form()
+ */
+//function date_popup_timepicker_date_field_settings_form_alter(&$form, $context) {
+//  $timepicker = variable_get('date_popup_timepicker', date_popup_get_preferred_timepicker());
+//  if ($handler = date_popup_timepicker_get_timepicker_handler($timepicker)) {
+//    $settings = isset($context['field']['settings']['date_popup_timepicker'][$timepicker]['timepicker_options'])
+//      ? $context['field']['settings']['date_popup_timepicker'][$timepicker]['timepicker_options']
+//      : array();
+//    $form['date_popup_timepicker'] = array(
+//      '#type' => 'fieldset',
+//      '#title' => t('Date popup timepicker'),
+////      '#description' => t('Popup timepicker settings'),
+//      '#collapsible' => TRUE,
+//      '#collapsed' => TRUE,
+//    );
+//    $form['date_popup_timepicker'][$timepicker] = $handler->fieldSettingsForm($form, $context, $settings);
+//  }
+//}
+
+/**
+ * Get ctools plugins info for timepickers.
+ */
+function date_popup_timepicker_get_timepicker_plugins($name = NULL) {
+  ctools_include('plugins');
+  $plugins = ctools_get_plugins('date_popup_timepicker', 'timepicker');
+  if (isset($name)) {
+    return isset($plugins[$name]) ? $plugins[$name] : NULL;
+  }
+  return $plugins;
+}
+
+/**
+ * Get handler instance for timepicker.
+ */
+function date_popup_timepicker_get_timepicker_handler($name) {
+  $handler = NULL;
+  if ($info = date_popup_timepicker_get_timepicker_plugins($name)) {
+    ctools_include('plugins');
+    $class = ctools_plugin_get_class($info, 'handler');
+    $handler = new $class();
+  }
+  return $handler;
 }
