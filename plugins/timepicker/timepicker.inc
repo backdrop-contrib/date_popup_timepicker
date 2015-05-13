@@ -145,8 +145,7 @@ class DatePopupTimepickerTimepicker {
   public function fieldSettingsForm($form, $context, $settings = array()) {
     $element = array();
     $defaults = $this->settingsDefaults();
-    // @todo drupal_array_merge_deep() will fail on amPmText... Think about.
-    $settings = drupal_array_merge_deep($defaults, $settings);
+    $settings = array_replace_recursive($defaults, $settings);
     $element['timeSeparator'] = array(
       '#type' => 'textfield',
       '#title' => t('Time separator'),
@@ -189,7 +188,7 @@ class DatePopupTimepickerTimepicker {
     $element['defaultTime'] = array(
       '#type' => 'textfield',
       '#title' => t('Default time'),
-      '#description' => t("Used as default time when input field is empty or for inline timePicker. Set to 'now' for the current time, '' for no highlighted time"),
+      '#description' => t("Used as default time when input field is empty or for inline timePicker. Set to 'now' for the current time, '' for no highlighted time."),
       '#default_value' => $settings['defaultTime'],
     );
     $element['showOn'] = array(
@@ -241,14 +240,14 @@ class DatePopupTimepickerTimepicker {
       'starts' => array(
         '#type' => 'textfield',
         '#title' => t('Starts'),
-        '#description' => t('First displayed hour'),
+        '#description' => t('First displayed hour.'),
         '#default_value' => $settings['hours']['starts'],
       ),
       'ends' => array(
         '#type' => 'textfield',
         '#title' => t('Ends'),
-        '#description' => t('Last displayed hour'),
-        '#default_value' => $settings['hours']['starts'],
+        '#description' => t('Last displayed hour.'),
+        '#default_value' => $settings['hours']['ends'],
       ),
     );
     $element['minutes'] = array(
@@ -258,19 +257,19 @@ class DatePopupTimepickerTimepicker {
       'starts' => array(
         '#type' => 'textfield',
         '#title' => t('Starts'),
-        '#description' => t('First displayed minute'),
+        '#description' => t('First displayed minute.'),
         '#default_value' => $settings['minutes']['starts'],
       ),
       'ends' => array(
         '#type' => 'textfield',
         '#title' => t('Ends'),
-        '#description' => t('Last displayed minute'),
-        '#default_value' => $settings['minutes']['starts'],
+        '#description' => t('Last displayed minute.'),
+        '#default_value' => $settings['minutes']['ends'],
       ),
       'interval' => array(
         '#type' => 'textfield',
         '#title' => t('Interval'),
-        '#description' => t('Interval of displayed minutes'),
+        '#description' => t('Interval of displayed minutes.'),
         '#default_value' => $settings['minutes']['interval'],
       ),
       // Optional extra entries for minutes
@@ -279,25 +278,25 @@ class DatePopupTimepickerTimepicker {
     $element['rows'] = array(
       '#type' => 'textfield',
       '#title' => t('Rows'),
-      '#description' => t('Number of rows for the input tables, minimum 2, makes more sense if you use multiple of 2'),
+      '#description' => t('Number of rows for the input tables, minimum 2, makes more sense if you use multiple of 2.'),
       '#default_value' => $settings['rows'],
     );
     $element['showHours'] = array(
       '#type' => 'checkbox',
       '#title' => t('Show hours'),
-      '#description' => t('Define if the hours section is displayed or not. Set to false to get a minute only dialog'),
+      '#description' => t('Define if the hours section is displayed or not. Set to false to get a minute only dialog.'),
       '#default_value' => $settings['showHours'],
     );
     $element['showMinutes'] = array(
       '#type' => 'checkbox',
       '#title' => t('Show minutes'),
-      '#description' => t('Define if the minutes section is displayed or not. Set to false to get an hour only dialog'),
+      '#description' => t('Define if the minutes section is displayed or not. Set to false to get an hour only dialog.'),
       '#default_value' => $settings['showMinutes'],
     );
     $element['minTime'] = array(
       '#type' => 'fieldset',
       '#title' => t('Min time'),
-      '#description' => t('Set the minimum time selectable by the user, disable hours and minutes previous to min time'),
+      '#description' => t('Set the minimum time selectable by the user, disable hours and minutes previous to min time.'),
       '#collapsible' => FALSE,
       'hour' => array(
         '#type' => 'textfield',
@@ -313,7 +312,7 @@ class DatePopupTimepickerTimepicker {
     $element['maxTime'] = array(
       '#type' => 'fieldset',
       '#title' => t('Max time'),
-      '#description' => t('Set the minimum time selectable by the user, disable hours and minutes after max time'),
+      '#description' => t('Set the minimum time selectable by the user, disable hours and minutes after max time.'),
       '#collapsible' => FALSE,
       'hour' => array(
         '#type' => 'textfield',
@@ -329,37 +328,37 @@ class DatePopupTimepickerTimepicker {
     $element['showCloseButton'] = array(
       '#type' => 'checkbox',
       '#title' => t('Show close button'),
-      '#description' => t('Shows an OK button to confirm the edit'),
+      '#description' => t('Shows an OK button to confirm the edit.'),
       '#default_value' => $settings['showCloseButton'],
     );
     $element['closeButtonText'] = array(
       '#type' => 'textfield',
       '#title' => t('Close button text'),
-      '#description' => t('Text for the confirmation button (ok button)'),
+      '#description' => t('Text for the confirmation button (ok button).'),
       '#default_value' => $settings['closeButtonText'],
     );
     $element['showNowButton'] = array(
       '#type' => 'checkbox',
       '#title' => t('Show now button'),
-      '#description' => t('Shows the "now" button'),
+      '#description' => t('Shows the "now" button.'),
       '#default_value' => $settings['showNowButton'],
     );
     $element['nowButtonText'] = array(
       '#type' => 'textfield',
       '#title' => t('Now button text'),
-      '#description' => t('Text for the now button'),
+      '#description' => t('Text for the now button.'),
       '#default_value' => $settings['nowButtonText'],
     );
     $element['showDeselectButton'] = array(
       '#type' => 'checkbox',
       '#title' => t('Show deselect button'),
-      '#description' => t('Shows the deselect time button'),
+      '#description' => t('Shows the deselect time button.'),
       '#default_value' => $settings['showDeselectButton'],
     );
     $element['deselectButtonText'] = array(
       '#type' => 'textfield',
       '#title' => t('Deselect button text'),
-      '#description' => t('Text for the deselect button'),
+      '#description' => t('Text for the deselect button.'),
       '#default_value' => $settings['nowButtonText'],
     );
     return array(
@@ -367,6 +366,223 @@ class DatePopupTimepickerTimepicker {
       // There is no need to define #tree => TRUE.
       'timepicker_options' => $element,
     );
+  }
+
+  /**
+   * Field Settings Form validate callback.
+   *
+   * @param array $element
+   *   Field settings form element/part as defined in the fieldSettingsForm().
+   *
+   * @param array $values
+   *   Submitted settings values for defined settings form element/part.
+   *
+   * @param array $form
+   *   Whole settings form basically defined by field_ui_field_edit_form().
+   *
+   * @param array $form_state
+   *   Whole form state passed to field_ui_field_edit_form_validate()
+   *   and other validate callbacks of the field_ui_field_edit_form form.
+   *
+   * @see field_ui_field_edit_form()
+   * @see field_ui_field_edit_form_validate()
+   */
+  public function fieldSettingsFormValidate(&$element, &$values, &$form, &$form_state) {
+    // @todo Shorten the code if possible.
+    // Validate hours starts part.
+    $value = $values['timepicker_options']['hours']['starts'];
+    if ($value !== '') {
+      if (!is_numeric($value) || intval($value) != $value || $value < 0 || $value > 23) {
+        form_error($element['timepicker_options']['hours']['starts']
+          , t('%name must be an integer between 0 and 23.', array('%name' => $element['timepicker_options']['hours']['starts']['#title'])));
+      }
+      else {
+        form_set_value($element['timepicker_options']['hours']['starts'], (int) $value, $form_state);
+      }
+    }
+    else {
+      form_set_value($element['timepicker_options']['hours']['starts'], NULL, $form_state);
+    }
+    // Validate hours ends part.
+    $value = $values['timepicker_options']['hours']['ends'];
+    if ($value !== '') {
+      if (!is_numeric($value) || intval($value) != $value || $value < 0 || $value > 23) {
+        form_error($element['timepicker_options']['hours']['ends']
+          , t('%name must be an integer between 0 and 23.', array('%name' => $element['timepicker_options']['hours']['ends']['#title'])));
+      }
+      else {
+        form_set_value($element['timepicker_options']['hours']['ends'], (int) $value, $form_state);
+      }
+    }
+    else {
+      form_set_value($element['timepicker_options']['hours']['ends'], NULL, $form_state);
+    }
+    // Validate minutes starts part.
+    $value = $values['timepicker_options']['minutes']['starts'];
+    if ($value !== '') {
+      if (!is_numeric($value) || intval($value) != $value || $value < 0 || $value > 59) {
+        form_error($element['timepicker_options']['minutes']['starts']
+          , t('%name must be an integer between 0 and 59.', array('%name' => $element['timepicker_options']['minutes']['starts']['#title'])));
+      }
+      else {
+        form_set_value($element['timepicker_options']['minutes']['starts'], (int) $value, $form_state);
+      }
+    }
+    else {
+      form_set_value($element['timepicker_options']['minutes']['starts'], NULL, $form_state);
+    }
+    // Validate minutes ends part.
+    $value = $values['timepicker_options']['minutes']['ends'];
+    if ($value !== '') {
+      if (!is_numeric($value) || intval($value) != $value || $value < 0 || $value > 59) {
+        form_error($element['timepicker_options']['minutes']['ends']
+          , t('%name must be an integer between 0 and 59.', array('%name' => $element['timepicker_options']['minutes']['ends']['#title'])));
+      }
+      else {
+        form_set_value($element['timepicker_options']['minutes']['ends'], (int) $value, $form_state);
+      }
+    }
+    else {
+      form_set_value($element['timepicker_options']['minutes']['ends'], NULL, $form_state);
+    }
+    // Validate minutes interval part.
+    $value = $values['timepicker_options']['minutes']['interval'];
+    if ($value !== '') {
+      if (!is_numeric($value) || intval($value) != $value || $value < 1 || $value > 59) {
+        form_error($element['timepicker_options']['minutes']['interval']
+          , t('%name must be an integer between 1 and 59.', array('%name' => $element['timepicker_options']['minutes']['interval']['#title'])));
+      }
+      else {
+        form_set_value($element['timepicker_options']['minutes']['interval'], (int) $value, $form_state);
+      }
+    }
+    else {
+      form_set_value($element['timepicker_options']['minutes']['interval'], NULL, $form_state);
+    }
+    // Validate rows part.
+    $value = $values['timepicker_options']['rows'];
+    if ($value !== '') {
+      if (!is_numeric($value) || intval($value) != $value || $value < 2) {
+        form_error($element['timepicker_options']['rows']
+          , t('%name must be an integer between 1 and 59.', array('%name' => $element['timepicker_options']['rows']['#title'])));
+      }
+      else {
+        form_set_value($element['timepicker_options']['rows'], (int) $value, $form_state);
+      }
+    }
+    else {
+      form_set_value($element['timepicker_options']['rows'], NULL, $form_state);
+    }
+    // Validate minTime hour part.
+    $value = $values['timepicker_options']['minTime']['hour'];
+    if ($value !== '') {
+      if (!is_numeric($value) || intval($value) != $value || $value < 0 || $value > 23) {
+        form_error($element['timepicker_options']['minTime']['hour']
+          , t('%name must be an integer between 0 and 23.', array('%name' => $element['timepicker_options']['minTime']['hour']['#title'])));
+      }
+      else {
+        form_set_value($element['timepicker_options']['minTime']['hour'], (int) $value, $form_state);
+      }
+    }
+    else {
+      form_set_value($element['timepicker_options']['minTime']['hour'], NULL, $form_state);
+    }
+    // Validate minTime minute part.
+    $value = $values['timepicker_options']['minTime']['minute'];
+    if ($value !== '') {
+      if (!is_numeric($value) || intval($value) != $value || $value < 0 || $value > 59) {
+        form_error($element['timepicker_options']['minTime']['minute']
+          , t('%name must be an integer between 0 and 59.', array('%name' => $element['timepicker_options']['minTime']['minute']['#title'])));
+      }
+      else {
+        form_set_value($element['timepicker_options']['minTime']['minute'], (int) $value, $form_state);
+      }
+    }
+    else {
+      form_set_value($element['timepicker_options']['minTime']['minute'], NULL, $form_state);
+    }
+    // Validate maxTime hour part.
+    $value = $values['timepicker_options']['maxTime']['hour'];
+    if ($value !== '') {
+      if (!is_numeric($value) || intval($value) != $value || $value < 0 || $value > 23) {
+        form_error($element['timepicker_options']['maxTime']['hour']
+          , t('%name must be an integer between 0 and 23.', array('%name' => $element['timepicker_options']['maxTime']['hour']['#title'])));
+      }
+      else {
+        form_set_value($element['timepicker_options']['maxTime']['hour'], (int) $value, $form_state);
+      }
+    }
+    else {
+      form_set_value($element['timepicker_options']['maxTime']['hour'], NULL, $form_state);
+    }
+    // Validate minTime minute part.
+    $value = $values['timepicker_options']['maxTime']['minute'];
+    if ($value !== '') {
+      if (!is_numeric($value) || intval($value) != $value || $value < 0 || $value > 59) {
+        form_error($element['timepicker_options']['maxTime']['minute']
+          , t('%name must be an integer between 0 and 59.', array('%name' => $element['timepicker_options']['maxTime']['minute']['#title'])));
+      }
+      else {
+        form_set_value($element['timepicker_options']['maxTime']['minute'], (int) $value, $form_state);
+      }
+    }
+    else {
+      form_set_value($element['timepicker_options']['maxTime']['minute'], NULL, $form_state);
+    }
+  }
+
+  /**
+   * Field Settings Form submit callback.
+   *
+   * @param array $element
+   *   Field settings form element/part as defined in the fieldSettingsForm().
+   *
+   * @param array $values
+   *   Submitted settings values for defined settings form element/part.
+   *
+   * @param array $form
+   *   Whole settings form basically defined by field_ui_field_edit_form().
+   *
+   * @param array $form_state
+   *   Whole form state passed to field_ui_field_edit_form_submit()
+   *   and other submit callbacks of the field_ui_field_edit_form form.
+   *
+   * @see field_ui_field_edit_form()
+   * @see field_ui_field_edit_form_submit()
+   */
+  public function fieldSettingsFormSubmit(&$element, &$values, &$form, &$form_state) {
+    $new = $values['timepicker_options'];
+    // Convert boolean settings to boolean.
+    $boolean = array(
+      'showLeadingZero',
+      'showMinutesLeadingZero',
+      'showPeriod',
+      'showPeriodLabels',
+      'showHours',
+      'showMinutes',
+      'showCloseButton',
+      'showNowButton',
+      'showDeselectButton',
+    );
+    foreach ($boolean as $key) {
+      $new[$key] = (bool) $values['timepicker_options'][$key];
+    }
+    // Final cleanup.
+    $not_null = function ($el) {
+      return isset($el);
+    };
+    foreach (array('hours', 'minutes', 'minTime', 'maxTime') as $key) {
+      $new[$key] = array_filter($values['timepicker_options'][$key], $not_null);
+      if (empty($new[$key])) {
+        unset($new[$key]);
+      }
+    }
+    if (!isset($new['rows'])) {
+      // Make sure that NULL value is removed from settings.
+      unset($new['rows']);
+    }
+    // Set processed values back.
+    form_set_value($element['timepicker_options'], $new, $form_state);
   }
 
   /**
@@ -390,7 +606,7 @@ class DatePopupTimepickerTimepicker {
       'showHours' => in_array('hour', $granularity),
       'showMinutes' => in_array('minute', $granularity),
     );
-    $element['#timepicker_options'] = drupal_array_merge_deep($settings_default, $element['#timepicker_options']);
+    $element['#timepicker_options'] = array_replace_recursive($settings_default, $element['#timepicker_options']);
     $element['#attached']['library'][] = array('system', 'ui.core');
     $element['#attached']['library'][] = array('system', 'ui.widget');
 
