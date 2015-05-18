@@ -129,11 +129,11 @@ class DatePopupTimepickerTimepicker extends DatePopupTimepicker {
    */
   public function processElement($element, &$form_state, $form) {
     $granularity = date_popup_time_granularity($element);
-    $settings_default = array(
+    $options_default = array(
       'showHours' => in_array('hour', $granularity),
       'showMinutes' => in_array('minute', $granularity),
     );
-    $element['#timepicker_options'] = array_replace_recursive($settings_default, $element['#timepicker_options']);
+    $element['#timepicker_options'] = array_replace_recursive($options_default, $element['#timepicker_options']);
     $element['#attached']['library'][] = array('system', 'ui.core');
     $element['#attached']['library'][] = array('system', 'ui.widget');
 
@@ -404,7 +404,7 @@ class DatePopupTimepickerTimepicker extends DatePopupTimepicker {
       '#type' => 'textfield',
       '#title' => t('Deselect button text'),
       '#description' => t('Text for the deselect button.'),
-      '#default_value' => $settings['nowButtonText'],
+      '#default_value' => $settings['deselectButtonText'],
     );
     return array(
       // timepicker_options elements must be always defined.
@@ -417,83 +417,50 @@ class DatePopupTimepickerTimepicker extends DatePopupTimepicker {
    * {@inheritdoc}
    */
   public function fieldSettingsFormValidate(&$element, &$values, &$form, &$form_state) {
-    // @todo Shorten the code if possible.
-    // Validate hours starts part.
-    $value = $values['timepicker_options']['hours']['starts'];
-    if ($value !== '') {
-      if (!is_numeric($value) || intval($value) != $value || $value < 0 || $value > 23) {
-        form_error($element['timepicker_options']['hours']['starts']
-          , t('%name must be an integer between 0 and 23.', array('%name' => $element['timepicker_options']['hours']['starts']['#title'])));
-      }
-      else {
-        form_set_value($element['timepicker_options']['hours']['starts'], (int) $value, $form_state);
-      }
-    }
-    else {
-      form_set_value($element['timepicker_options']['hours']['starts'], NULL, $form_state);
-    }
-    // Validate hours ends part.
-    $value = $values['timepicker_options']['hours']['ends'];
-    if ($value !== '') {
-      if (!is_numeric($value) || intval($value) != $value || $value < 0 || $value > 23) {
-        form_error($element['timepicker_options']['hours']['ends']
-          , t('%name must be an integer between 0 and 23.', array('%name' => $element['timepicker_options']['hours']['ends']['#title'])));
-      }
-      else {
-        form_set_value($element['timepicker_options']['hours']['ends'], (int) $value, $form_state);
-      }
-    }
-    else {
-      form_set_value($element['timepicker_options']['hours']['ends'], NULL, $form_state);
-    }
-    // Validate minutes starts part.
-    $value = $values['timepicker_options']['minutes']['starts'];
-    if ($value !== '') {
-      if (!is_numeric($value) || intval($value) != $value || $value < 0 || $value > 59) {
-        form_error($element['timepicker_options']['minutes']['starts']
-          , t('%name must be an integer between 0 and 59.', array('%name' => $element['timepicker_options']['minutes']['starts']['#title'])));
-      }
-      else {
-        form_set_value($element['timepicker_options']['minutes']['starts'], (int) $value, $form_state);
+    // Validate int hours and minutes settings.
+    foreach (array('hours', 'minutes', 'minTime', 'maxTime') as $key) {
+      foreach ($values['timepicker_options'][$key] as $subkey => $value) {
+        // Init validation limits.
+        if ($key == 'minutes' && $subkey == 'interval') {
+          $limits = array(1, 59);
+        }
+        elseif ($key == 'hours' || $subkey == 'hour') {
+          $limits = array(0, 23);
+        }
+        // Remaining things are minutes.
+        else {
+          $limits = array(0, 59);
+        }
+        // Validate.
+        if ($value !== '') {
+          if (!is_numeric($value) || intval($value) != $value || $value < $limits[0] || $value > $limits[1]) {
+            $t_args = array(
+              '%name' => $element['timepicker_options'][$key][$subkey]['#title'],
+              '@start' => $limits[0],
+              '@end' => $limits[1],
+            );
+            form_error($element['timepicker_options'][$key][$subkey]
+              , t('%name must be an integer between @start and @end.', $t_args));
+          }
+          else {
+            form_set_value($element['timepicker_options'][$key][$subkey], (int) $value, $form_state);
+          }
+        }
+        else {
+          form_set_value($element['timepicker_options'][$key][$subkey], NULL, $form_state);
+        }
       }
     }
-    else {
-      form_set_value($element['timepicker_options']['minutes']['starts'], NULL, $form_state);
-    }
-    // Validate minutes ends part.
-    $value = $values['timepicker_options']['minutes']['ends'];
-    if ($value !== '') {
-      if (!is_numeric($value) || intval($value) != $value || $value < 0 || $value > 59) {
-        form_error($element['timepicker_options']['minutes']['ends']
-          , t('%name must be an integer between 0 and 59.', array('%name' => $element['timepicker_options']['minutes']['ends']['#title'])));
-      }
-      else {
-        form_set_value($element['timepicker_options']['minutes']['ends'], (int) $value, $form_state);
-      }
-    }
-    else {
-      form_set_value($element['timepicker_options']['minutes']['ends'], NULL, $form_state);
-    }
-    // Validate minutes interval part.
-    $value = $values['timepicker_options']['minutes']['interval'];
-    if ($value !== '') {
-      if (!is_numeric($value) || intval($value) != $value || $value < 1 || $value > 59) {
-        form_error($element['timepicker_options']['minutes']['interval']
-          , t('%name must be an integer between 1 and 59.', array('%name' => $element['timepicker_options']['minutes']['interval']['#title'])));
-      }
-      else {
-        form_set_value($element['timepicker_options']['minutes']['interval'], (int) $value, $form_state);
-      }
-    }
-    else {
-      form_set_value($element['timepicker_options']['minutes']['interval'], NULL, $form_state);
-    }
+
     // Validate rows part.
     $value = $values['timepicker_options']['rows'];
     if ($value !== '') {
       if (!is_numeric($value) || intval($value) != $value || $value < 2) {
+        $t_args = array(
+          '%name' => $element['timepicker_options']['rows']['#title'],
+        );
         form_error($element['timepicker_options']['rows']
-          , t('%name must be an integer between 1 and 59.', array('%name' => $element['timepicker_options']['rows']['#title'])));
+          , t('%name must be an integer greater than 1.', $t_args));
       }
       else {
         form_set_value($element['timepicker_options']['rows'], (int) $value, $form_state);
@@ -501,62 +468,6 @@ class DatePopupTimepickerTimepicker extends DatePopupTimepicker {
     }
     else {
       form_set_value($element['timepicker_options']['rows'], NULL, $form_state);
-    }
-    // Validate minTime hour part.
-    $value = $values['timepicker_options']['minTime']['hour'];
-    if ($value !== '') {
-      if (!is_numeric($value) || intval($value) != $value || $value < 0 || $value > 23) {
-        form_error($element['timepicker_options']['minTime']['hour']
-          , t('%name must be an integer between 0 and 23.', array('%name' => $element['timepicker_options']['minTime']['hour']['#title'])));
-      }
-      else {
-        form_set_value($element['timepicker_options']['minTime']['hour'], (int) $value, $form_state);
-      }
-    }
-    else {
-      form_set_value($element['timepicker_options']['minTime']['hour'], NULL, $form_state);
-    }
-    // Validate minTime minute part.
-    $value = $values['timepicker_options']['minTime']['minute'];
-    if ($value !== '') {
-      if (!is_numeric($value) || intval($value) != $value || $value < 0 || $value > 59) {
-        form_error($element['timepicker_options']['minTime']['minute']
-          , t('%name must be an integer between 0 and 59.', array('%name' => $element['timepicker_options']['minTime']['minute']['#title'])));
-      }
-      else {
-        form_set_value($element['timepicker_options']['minTime']['minute'], (int) $value, $form_state);
-      }
-    }
-    else {
-      form_set_value($element['timepicker_options']['minTime']['minute'], NULL, $form_state);
-    }
-    // Validate maxTime hour part.
-    $value = $values['timepicker_options']['maxTime']['hour'];
-    if ($value !== '') {
-      if (!is_numeric($value) || intval($value) != $value || $value < 0 || $value > 23) {
-        form_error($element['timepicker_options']['maxTime']['hour']
-          , t('%name must be an integer between 0 and 23.', array('%name' => $element['timepicker_options']['maxTime']['hour']['#title'])));
-      }
-      else {
-        form_set_value($element['timepicker_options']['maxTime']['hour'], (int) $value, $form_state);
-      }
-    }
-    else {
-      form_set_value($element['timepicker_options']['maxTime']['hour'], NULL, $form_state);
-    }
-    // Validate minTime minute part.
-    $value = $values['timepicker_options']['maxTime']['minute'];
-    if ($value !== '') {
-      if (!is_numeric($value) || intval($value) != $value || $value < 0 || $value > 59) {
-        form_error($element['timepicker_options']['maxTime']['minute']
-          , t('%name must be an integer between 0 and 59.', array('%name' => $element['timepicker_options']['maxTime']['minute']['#title'])));
-      }
-      else {
-        form_set_value($element['timepicker_options']['maxTime']['minute'], (int) $value, $form_state);
-      }
-    }
-    else {
-      form_set_value($element['timepicker_options']['maxTime']['minute'], NULL, $form_state);
     }
   }
 

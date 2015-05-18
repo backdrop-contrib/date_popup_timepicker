@@ -129,7 +129,7 @@ class DatePopupTimepicker implements DatePopupTimepickerInterface {
    * {@inheritdoc}
    */
   public function fieldSettingsFormValidate(&$element, &$values, &$form, &$form_state) {
-
+    // Do nothing.
   }
 
   /**

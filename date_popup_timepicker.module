@@ -84,10 +84,8 @@ function date_popup_timepicker_libraries_info() {
   $timepickers = date_popup_timepicker_get_timepicker_plugins();
   foreach ($timepickers as $info) {
     $class = ctools_plugin_get_class($info, 'handler');
-    if (method_exists($class, 'librariesInfo')) {
-      $handler = new $class();
-      $libraries = array_merge($libraries, $handler->librariesInfo());
-    }
+    $handler = new $class();
+    $libraries = array_merge($libraries, $handler->librariesInfo());
   }
   return $libraries;
 }
