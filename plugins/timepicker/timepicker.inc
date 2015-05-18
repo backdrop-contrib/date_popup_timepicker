@@ -13,10 +13,7 @@ $plugin = array(
   ),
 );
 
-/**
- * @todo Extend some base class or implement interface.
- */
-class DatePopupTimepickerTimepicker {
+class DatePopupTimepickerTimepicker extends DatePopupTimepicker {
 
   /**
    * Get default settings for the plugin.
@@ -128,19 +125,67 @@ class DatePopupTimepickerTimepicker {
   }
 
   /**
-   * Get field settings form.
-   *
-   * @param array $form
-   *   Settings form definition.
-   *
-   * @param array $context
-   *   Array containing 3 elements: field info, instance info and has_data flag.
-   *
-   * @param array $settings
-   *   Currently saved settings in the field.
-   *
-   * @return array
-   *   Timepicker settings form part definition.
+   * {@inheritdoc}
+   */
+  public function processElement($element, &$form_state, $form) {
+    $granularity = date_popup_time_granularity($element);
+    $settings_default = array(
+      'showHours' => in_array('hour', $granularity),
+      'showMinutes' => in_array('minute', $granularity),
+    );
+    $element['#timepicker_options'] = array_replace_recursive($settings_default, $element['#timepicker_options']);
+    $element['#attached']['library'][] = array('system', 'ui.core');
+    $element['#attached']['library'][] = array('system', 'ui.widget');
+
+    // Add Timepicker library.
+    $element['#attached']['libraries_load'][] = array('timepicker');
+    // @todo is it the best place for plugin specific .js?
+    $element['#attached']['js'][] = drupal_get_path('module', 'date_popup_timepicker') . "/js/date_popup_timepicker.timepicker.js";
+
+    return $element;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function librariesInfo() {
+    $libraries = array();
+    $libraries['timepicker'] = array(
+      'name' => 'jQuery UI Timepicker',
+      'vendor url' => 'https://fgelinas.com/code/timepicker',
+      'download url' => 'https://fgelinas.com/code/timepicker/releases/jquery-ui-timepicker-0.3.3.zip',
+      'version arguments' => array(
+        'file' => 'jquery.ui.timepicker.js',
+        'pattern' => '/version\: \"(\d\.\d.\d)\"/',
+        'lines' => 43,
+      ),
+      'files' => array(
+        'js' => array(
+          'jquery.ui.timepicker.js',
+        ),
+        'css' => array(
+          'jquery.ui.timepicker.css',
+        ),
+      ),
+      'variants' => array(
+        'source' => array(
+          'files' => array(
+            'js' => array(
+              'jquery.ui.timepicker.js',
+            ),
+            'css' => array(
+              'jquery.ui.timepicker.css',
+            ),
+          ),
+        ),
+      ),
+    );
+
+    return $libraries;
+  }
+
+  /**
+   * {@inheritdoc}
    */
   public function fieldSettingsForm($form, $context, $settings = array()) {
     $element = array();
@@ -369,23 +414,7 @@ class DatePopupTimepickerTimepicker {
   }
 
   /**
-   * Field Settings Form validate callback.
-   *
-   * @param array $element
-   *   Field settings form element/part as defined in the fieldSettingsForm().
-   *
-   * @param array $values
-   *   Submitted settings values for defined settings form element/part.
-   *
-   * @param array $form
-   *   Whole settings form basically defined by field_ui_field_edit_form().
-   *
-   * @param array $form_state
-   *   Whole form state passed to field_ui_field_edit_form_validate()
-   *   and other validate callbacks of the field_ui_field_edit_form form.
-   *
-   * @see field_ui_field_edit_form()
-   * @see field_ui_field_edit_form_validate()
+   * {@inheritdoc}
    */
   public function fieldSettingsFormValidate(&$element, &$values, &$form, &$form_state) {
     // @todo Shorten the code if possible.
@@ -532,23 +561,7 @@ class DatePopupTimepickerTimepicker {
   }
 
   /**
-   * Field Settings Form submit callback.
-   *
-   * @param array $element
-   *   Field settings form element/part as defined in the fieldSettingsForm().
-   *
-   * @param array $values
-   *   Submitted settings values for defined settings form element/part.
-   *
-   * @param array $form
-   *   Whole settings form basically defined by field_ui_field_edit_form().
-   *
-   * @param array $form_state
-   *   Whole form state passed to field_ui_field_edit_form_submit()
-   *   and other submit callbacks of the field_ui_field_edit_form form.
-   *
-   * @see field_ui_field_edit_form()
-   * @see field_ui_field_edit_form_submit()
+   * {@inheritdoc}
    */
   public function fieldSettingsFormSubmit(&$element, &$values, &$form, &$form_state) {
     $new = $values['timepicker_options'];
@@ -585,80 +598,4 @@ class DatePopupTimepickerTimepicker {
     form_set_value($element['timepicker_options'], $new, $form_state);
   }
 
-  /**
-   * Element process callback.
-   *
-   * @param array $element
-   *   Form element structure to process.
-   *
-   * @param array $form_state
-   *   Form state.
-   *
-   * @param array $form
-   *   The whole form definition structure.
-   *
-   * @return array
-   *   Processed form element.
-   */
-  public function processElement($element, &$form_state, $form) {
-    $granularity = date_popup_time_granularity($element);
-    $settings_default = array(
-      'showHours' => in_array('hour', $granularity),
-      'showMinutes' => in_array('minute', $granularity),
-    );
-    $element['#timepicker_options'] = array_replace_recursive($settings_default, $element['#timepicker_options']);
-    $element['#attached']['library'][] = array('system', 'ui.core');
-    $element['#attached']['library'][] = array('system', 'ui.widget');
-
-    // Add Timepicker library.
-    $element['#attached']['libraries_load'][] = array('timepicker');
-    // @todo is it the best place for plugin specific .js?
-    $element['#attached']['js'][] = drupal_get_path('module', 'date_popup_timepicker') . "/js/date_popup_timepicker.timepicker.js";
-
-    return $element;
-  }
-
-  /**
-   * Provide library definition for libraries module.
-   *
-   * @return array
-   *   Library definition.
-   *
-   * @see hook_libraries_info()
-   */
-  public function librariesInfo() {
-    $libraries = array();
-    $libraries['timepicker'] = array(
-      'name' => 'jQuery UI Timepicker',
-      'vendor url' => 'https://fgelinas.com/code/timepicker',
-      'download url' => 'https://fgelinas.com/code/timepicker/releases/jquery-ui-timepicker-0.3.3.zip',
-      'version arguments' => array(
-        'file' => 'jquery.ui.timepicker.js',
-        'pattern' => '/version\: \"(\d\.\d.\d)\"/',
-        'lines' => 43,
-      ),
-      'files' => array(
-        'js' => array(
-          'jquery.ui.timepicker.js',
-        ),
-        'css' => array(
-          'jquery.ui.timepicker.css',
-        ),
-      ),
-      'variants' => array(
-        'source' => array(
-          'files' => array(
-            'js' => array(
-              'jquery.ui.timepicker.js',
-            ),
-            'css' => array(
-              'jquery.ui.timepicker.css',
-            ),
-          ),
-        ),
-      ),
-    );
-
-    return $libraries;
-  }
 }
