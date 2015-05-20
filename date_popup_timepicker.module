@@ -52,10 +52,14 @@ function date_popup_timepicker_date_popup_element_process($element, &$form_state
     // Date field widgets contain #field and #instance properties.
     // It would be nice to use hook_field_widget_WIDGET_TYPE_form_alter()
     // implementation to extend #timepicker_options via implementation,
-    // but unfortunately date expand widget
+    // but unfortunately date expands widget.
     // @see date_combo_element_process()
-    if (isset($element['#instance']) && !empty($element['#instance']['settings']['date_popup_timepicker'][$name]['timepicker_options'])) {
-      $element['#timepicker_options'] = array_replace_recursive($element['#instance']['settings']['date_popup_timepicker'][$name]['timepicker_options'], $element['#timepicker_options']);
+    if (isset($element['#instance']) && !empty($element['#instance']['settings']['date_popup_timepicker'][$name])) {
+      // Only user submitted settings need to be proccess to convert, sanitize,
+      // translate, etc. Options defined in the code should alread be safe and
+      // translated if needed.
+      $field_options = $handler->processFieldSettings($element['#instance']['settings']['date_popup_timepicker'][$name], $element, $form_state, $form);
+      $element['#timepicker_options'] = array_replace_recursive($field_options, $element['#timepicker_options']);
     }
 
     $element = $handler->processElement($element, $form_state, $form);
@@ -110,14 +114,15 @@ function date_popup_timepicker_form_date_popup_settings_alter(&$form, &$form_sta
 function date_popup_timepicker_date_field_instance_settings_form_alter(&$form, $context) {
   $timepicker = variable_get('date_popup_timepicker', date_popup_get_preferred_timepicker());
   if ($handler = date_popup_timepicker_get_timepicker_handler($timepicker)) {
-    $settings = isset($context['instance']['settings']['date_popup_timepicker'][$timepicker]['timepicker_options'])
-      ? $context['instance']['settings']['date_popup_timepicker'][$timepicker]['timepicker_options']
+    // Should be there...
+    $info = date_popup_timepicker_get_timepicker_plugins($timepicker);
+    $settings = isset($context['instance']['settings']['date_popup_timepicker'][$timepicker])
+      ? $context['instance']['settings']['date_popup_timepicker'][$timepicker]
       : array();
     $form['date_popup_timepicker'] = array(
       '#type' => 'fieldset',
       '#title' => t('Date popup timepicker'),
-      // @todo Replace @name by actual timepicker name.
-      '#description' => t('Popup @name timepicker settings.'),
+      '#description' => t('%name settings.', array('%name' => $info['title'])),
       '#collapsible' => TRUE,
       '#collapsed' => TRUE,
       // Custom property to pass used timepicker name.

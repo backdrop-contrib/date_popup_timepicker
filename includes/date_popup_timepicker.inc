@@ -51,8 +51,6 @@ interface DatePopupTimepickerInterface {
    *
    * @return array
    *   Timepicker settings form part definition.
-   *
-   * @todo Should the $settings default to array?
    */
   public function fieldSettingsForm($form, $context, $settings = array());
 
@@ -98,6 +96,28 @@ interface DatePopupTimepickerInterface {
    */
   public function fieldSettingsFormSubmit(&$element, &$values, &$form, &$form_state);
 
+  /**
+   * Process field settings set in UI for further use in #timepicker options.
+   *
+   * For example settings may be sanitized, translated, etc.
+   *
+   * @param array $settings
+   *   Timepicked settings saved in field instanc.
+   *
+   * @param array $element
+   *   Form  API element structure to process.
+   *
+   * @param array $form_state
+   *   Form state.
+   *
+   * @param array $form
+   *   The whole form definition structure.
+   *
+   * @return array
+   *   Processed timepicker options.
+   */
+  public function processFieldSettings($settings, $element, &$form_state, $form);
+
 }
 
 class DatePopupTimepicker implements DatePopupTimepickerInterface {
@@ -137,6 +157,13 @@ class DatePopupTimepicker implements DatePopupTimepickerInterface {
    */
   public function fieldSettingsFormSubmit(&$element, &$values, &$form, &$form_state) {
     // Do nothing.
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function processFieldSettings($settings, $element, &$form_state, $form) {
+    return isset($settings['timepicker_options']) ? $settings['timepicker_options'] : array();
   }
 
 }

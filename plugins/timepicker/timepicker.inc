@@ -190,42 +190,43 @@ class DatePopupTimepickerTimepicker extends DatePopupTimepicker {
   public function fieldSettingsForm($form, $context, $settings = array()) {
     $element = array();
     $defaults = $this->settingsDefaults();
-    $settings = array_replace_recursive($defaults, $settings);
+    $options = isset($settings['timepicker_options']) ? $settings['timepicker_options'] : array();
+    $options = array_replace_recursive($defaults, $options);
     $element['timeSeparator'] = array(
       '#type' => 'textfield',
       '#title' => t('Time separator'),
       '#description' => t('The character to use to separate hours and minutes.'),
-      '#default_value' => $settings['timeSeparator'],
+      '#default_value' => $options['timeSeparator'],
     );
     $element['showLeadingZero'] = array(
       '#type' => 'checkbox',
       '#title' => t('Show leading zero'),
       '#description' => t('Define whether or not to show a leading zero for hours < 10.'),
-      '#default_value' => $settings['showLeadingZero'],
+      '#default_value' => $options['showLeadingZero'],
     );
     $element['showMinutesLeadingZero'] = array(
       '#type' => 'checkbox',
       '#title' => t('Show minutes leading zero'),
       '#description' => t('Define whether or not to show a leading zero for minutes < 10.'),
-      '#default_value' => $settings['showMinutesLeadingZero'],
+      '#default_value' => $options['showMinutesLeadingZero'],
     );
     $element['showPeriod'] = array(
       '#type' => 'checkbox',
       '#title' => t('Show period'),
       '#description' => t('Define whether or not to show AM/PM with selected time.'),
-      '#default_value' => $settings['showPeriod'],
+      '#default_value' => $options['showPeriod'],
     );
     $element['showPeriodLabels'] = array(
       '#type' => 'checkbox',
       '#title' => t('Show period labels'),
       '#description' => t('Define if the AM/PM labels on the left are displayed.'),
-      '#default_value' => $settings['showPeriodLabels'],
+      '#default_value' => $options['showPeriodLabels'],
     );
     $element['periodSeparator'] = array(
       '#type' => 'textfield',
       '#title' => t('Period separator'),
       '#description' => t('The character to use to separate the time from the time period.'),
-      '#default_value' => $settings['periodSeparator'],
+      '#default_value' => $options['periodSeparator'],
     );
     // Define an alternate input to parse selected time to
 //    $form['altField'] = array();
@@ -234,7 +235,7 @@ class DatePopupTimepickerTimepicker extends DatePopupTimepicker {
       '#type' => 'textfield',
       '#title' => t('Default time'),
       '#description' => t("Used as default time when input field is empty or for inline timePicker. Set to 'now' for the current time, '' for no highlighted time."),
-      '#default_value' => $settings['defaultTime'],
+      '#default_value' => $options['defaultTime'],
     );
     $element['showOn'] = array(
       '#type' => 'select',
@@ -245,19 +246,19 @@ class DatePopupTimepickerTimepicker extends DatePopupTimepicker {
         'button' => t('Button'),
         'both' => t('Both'),
       ),
-      '#default_value' => $settings['showOn'],
+      '#default_value' => $options['showOn'],
     );
     // jQuery selector that acts as button trigger. ex: '#trigger_button'
 //    $element['button'] = array();
     $element['hourText'] = array(
       '#type' => 'textfield',
       '#title' => t('Hour text'),
-      '#default_value' => $settings['hourText'],
+      '#default_value' => $options['hourText'],
     );
     $element['minuteText'] = array(
       '#type' => 'textfield',
       '#title' => t('Minute text'),
-      '#default_value' => $settings['minuteText'],
+      '#default_value' => $options['minuteText'],
     );
     $element['amPmText'] = array(
       '#type' => 'fieldset',
@@ -266,12 +267,12 @@ class DatePopupTimepickerTimepicker extends DatePopupTimepicker {
       0 => array(
         '#type' => 'textfield',
         '#title' => t('AM'),
-        '#default_value' => $settings['amPmText'][0],
+        '#default_value' => $options['amPmText'][0],
       ),
       1 => array(
         '#type' => 'textfield',
         '#title' => t('PM'),
-        '#default_value' => $settings['amPmText'][1],
+        '#default_value' => $options['amPmText'][1],
       ),
     );
     // Corner of the dialog to position, used with the jQuery UI Position utility if present.
@@ -286,13 +287,13 @@ class DatePopupTimepickerTimepicker extends DatePopupTimepicker {
         '#type' => 'textfield',
         '#title' => t('Starts'),
         '#description' => t('First displayed hour.'),
-        '#default_value' => $settings['hours']['starts'],
+        '#default_value' => $options['hours']['starts'],
       ),
       'ends' => array(
         '#type' => 'textfield',
         '#title' => t('Ends'),
         '#description' => t('Last displayed hour.'),
-        '#default_value' => $settings['hours']['ends'],
+        '#default_value' => $options['hours']['ends'],
       ),
     );
     $element['minutes'] = array(
@@ -303,19 +304,19 @@ class DatePopupTimepickerTimepicker extends DatePopupTimepicker {
         '#type' => 'textfield',
         '#title' => t('Starts'),
         '#description' => t('First displayed minute.'),
-        '#default_value' => $settings['minutes']['starts'],
+        '#default_value' => $options['minutes']['starts'],
       ),
       'ends' => array(
         '#type' => 'textfield',
         '#title' => t('Ends'),
         '#description' => t('Last displayed minute.'),
-        '#default_value' => $settings['minutes']['ends'],
+        '#default_value' => $options['minutes']['ends'],
       ),
       'interval' => array(
         '#type' => 'textfield',
         '#title' => t('Interval'),
         '#description' => t('Interval of displayed minutes.'),
-        '#default_value' => $settings['minutes']['interval'],
+        '#default_value' => $options['minutes']['interval'],
       ),
       // Optional extra entries for minutes
 //      'manual' => array(),
@@ -324,19 +325,19 @@ class DatePopupTimepickerTimepicker extends DatePopupTimepicker {
       '#type' => 'textfield',
       '#title' => t('Rows'),
       '#description' => t('Number of rows for the input tables, minimum 2, makes more sense if you use multiple of 2.'),
-      '#default_value' => $settings['rows'],
+      '#default_value' => $options['rows'],
     );
     $element['showHours'] = array(
       '#type' => 'checkbox',
       '#title' => t('Show hours'),
       '#description' => t('Define if the hours section is displayed or not. Set to false to get a minute only dialog.'),
-      '#default_value' => $settings['showHours'],
+      '#default_value' => $options['showHours'],
     );
     $element['showMinutes'] = array(
       '#type' => 'checkbox',
       '#title' => t('Show minutes'),
       '#description' => t('Define if the minutes section is displayed or not. Set to false to get an hour only dialog.'),
-      '#default_value' => $settings['showMinutes'],
+      '#default_value' => $options['showMinutes'],
     );
     $element['minTime'] = array(
       '#type' => 'fieldset',
@@ -346,12 +347,12 @@ class DatePopupTimepickerTimepicker extends DatePopupTimepicker {
       'hour' => array(
         '#type' => 'textfield',
         '#title' => t('Min hour'),
-        '#default_value' => $settings['minTime']['hour'],
+        '#default_value' => $options['minTime']['hour'],
       ),
       'minute' => array(
         '#type' => 'textfield',
         '#title' => t('Min minute'),
-        '#default_value' => $settings['minTime']['minute'],
+        '#default_value' => $options['minTime']['minute'],
       ),
     );
     $element['maxTime'] = array(
@@ -362,52 +363,51 @@ class DatePopupTimepickerTimepicker extends DatePopupTimepicker {
       'hour' => array(
         '#type' => 'textfield',
         '#title' => t('Max hour'),
-        '#default_value' => $settings['maxTime']['hour'],
+        '#default_value' => $options['maxTime']['hour'],
       ),
       'minute' => array(
         '#type' => 'textfield',
         '#title' => t('Max minute'),
-        '#default_value' => $settings['maxTime']['minute'],
+        '#default_value' => $options['maxTime']['minute'],
       ),
     );
     $element['showCloseButton'] = array(
       '#type' => 'checkbox',
       '#title' => t('Show close button'),
       '#description' => t('Shows an OK button to confirm the edit.'),
-      '#default_value' => $settings['showCloseButton'],
+      '#default_value' => $options['showCloseButton'],
     );
     $element['closeButtonText'] = array(
       '#type' => 'textfield',
       '#title' => t('Close button text'),
       '#description' => t('Text for the confirmation button (ok button).'),
-      '#default_value' => $settings['closeButtonText'],
+      '#default_value' => $options['closeButtonText'],
     );
     $element['showNowButton'] = array(
       '#type' => 'checkbox',
       '#title' => t('Show now button'),
       '#description' => t('Shows the "now" button.'),
-      '#default_value' => $settings['showNowButton'],
+      '#default_value' => $options['showNowButton'],
     );
     $element['nowButtonText'] = array(
       '#type' => 'textfield',
       '#title' => t('Now button text'),
       '#description' => t('Text for the now button.'),
-      '#default_value' => $settings['nowButtonText'],
+      '#default_value' => $options['nowButtonText'],
     );
     $element['showDeselectButton'] = array(
       '#type' => 'checkbox',
       '#title' => t('Show deselect button'),
       '#description' => t('Shows the deselect time button.'),
-      '#default_value' => $settings['showDeselectButton'],
+      '#default_value' => $options['showDeselectButton'],
     );
     $element['deselectButtonText'] = array(
       '#type' => 'textfield',
       '#title' => t('Deselect button text'),
       '#description' => t('Text for the deselect button.'),
-      '#default_value' => $settings['deselectButtonText'],
+      '#default_value' => $options['deselectButtonText'],
     );
     return array(
-      // timepicker_options elements must be always defined.
       // There is no need to define #tree => TRUE.
       'timepicker_options' => $element,
     );
@@ -507,6 +507,65 @@ class DatePopupTimepickerTimepicker extends DatePopupTimepicker {
     }
     // Set processed values back.
     form_set_value($element['timepicker_options'], $new, $form_state);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function processFieldSettings($settings, $element, &$form_state, $form) {
+    $options = isset($settings['timepicker_options']) ? $settings['timepicker_options'] : array();
+    if (!empty($options)) {
+      // @todo Define this list somewhere else since it's used in the DatePopupTimepickerTimepicker::fieldSettingsFormSubmit() as well.
+      // @todo Shorten code if possible.
+      $groups = array(
+        'boolean' => array(
+          'showLeadingZero',
+          'showMinutesLeadingZero',
+          'showPeriod',
+          'showPeriodLabels',
+          'showHours',
+          'showMinutes',
+          'showCloseButton',
+          'showNowButton',
+          'showDeselectButton',
+        ),
+        'int' => array(
+          'hours',
+          'minutes',
+          'rows',
+          'hour',
+          'minute',
+          'interval',
+          'starts',
+          'ends',
+        ),
+        'no_filtering' => array(
+          'timeSeparator',
+          'periodSeparator',
+        ),
+      );
+      // Callback for the array_walk_recursive().
+      $filter = function(&$item, $key, $groups) {
+        if (in_array($key, $groups['boolean'], TRUE)) {
+          $item = (bool) $item;
+        }
+        elseif (in_array($key, $groups['int'], TRUE)) {
+          $item = (int) $item;
+        }
+        elseif (in_array($key, $groups['no_filtering'], TRUE)) {
+          // Do nothing.
+        }
+        else {
+          // @todo Use filter_xss_admin() instead?
+          $item = check_plain($item);
+        }
+      };
+      // Filter user submitted settings since plugin builds output by just
+      // concatenation of strings so it's possible, for example,
+      // to insert html into labels.
+      array_walk_recursive($options, $filter, $groups);
+    }
+    return $options;
   }
 
 }
