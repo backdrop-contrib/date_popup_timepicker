@@ -11,19 +11,20 @@ CONTENTS OF THIS FILE
 INTRODUCTION
 ------------
 
-The Date Popup Timepicker module adds one more timepicker option for elements
+The Date Popup Timepicker module adds more timepicker options for elements
 of date_popup type and date_popup widgets for date fields provided by the Date
-module (https://www.drupal.org/project/date). It uses jQuery UI Timepicker
-(By François Gélinas) timepicker library, and provided widget looks very similar
-to core's jQuery UI Datepicker widget shipped with Drupal core and utilized by
-the Date module.
+module (https://www.drupal.org/project/date). The only available option
+for now is jQuery UI Timepicker (By François Gélinas) timepicker library, and
+provided widget looks very similar to core's jQuery UI Datepicker widget shipped
+with Drupal core and utilized by the Date module.
 
 
  * For a full description of the module, visit the project page:
    https://www.drupal.org/project/date_popup_timepicker
 
 
- * To submit bug reports and feature suggestions, or to track changes:
+ * To submit bug reports and feature suggestions including new timepicker
+   plugins support, or to track changes:
    https://www.drupal.org/project/issues/date_popup_timepicker
 
 
@@ -31,6 +32,7 @@ REQUIREMENTS
 ------------
 
 This module requires the following modules:
+ * Chaos tool suite (ctools) (https://www.drupal.org/project/ctools)
  * Date Popup, part of the Date module (https://www.drupal.org/project/date)
  * Libraries (https://www.drupal.org/project/libraries)
 
@@ -55,6 +57,9 @@ CONFIGURATION
 -------------
 
  * Choose "jQuery UI Timepicker" option in Configuration » Date API » Date Popup
+
+ * If used with Date fields, adjust plugin settings on field settings form if
+   needed.
 
 
 MAINTAINERS
