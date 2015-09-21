@@ -5,6 +5,7 @@ CONTENTS OF THIS FILE
  * Requirements
  * Installation
  * Configuration
+ * Notes
  * Maintainers
 
 
@@ -60,6 +61,21 @@ CONFIGURATION
 
  * If used with Date fields, adjust plugin settings on field settings form if
    needed.
+
+
+NOTES
+-----
+
+ * There is known issue in jQuery UI Timepicker (By François Gélinas) library
+   when using it with the Bootstrap front-end framework. You'll need to add
+   CSS fix to your styles if issue will appear, similar to the following:
+
+   .ui-timepicker-table td a {
+     -webkit-box-sizing: content-box !important;
+     box-sizing: content-box !important;
+   }
+
+   Please see https://github.com/fgelinas/timepicker/issues/86 for more details.
 
 
 MAINTAINERS
