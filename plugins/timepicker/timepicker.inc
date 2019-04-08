@@ -192,41 +192,17 @@ class DatePopupTimepickerTimepicker extends DatePopupTimepicker {
     $defaults = $this->settingsDefaults();
     $options = isset($settings['timepicker_options']) ? $settings['timepicker_options'] : array();
     $options = array_replace_recursive($defaults, $options);
-    $element['timeSeparator'] = array(
-      '#type' => 'textfield',
-      '#title' => t('Time separator'),
-      '#description' => t('The character to use to separate hours and minutes.'),
-      '#default_value' => $options['timeSeparator'],
-    );
     $element['showLeadingZero'] = array(
       '#type' => 'checkbox',
-      '#title' => t('Show leading zero'),
+      '#title' => t('Show hours leading zero'),
       '#description' => t('Define whether or not to show a leading zero for hours < 10.'),
       '#default_value' => $options['showLeadingZero'],
-    );
-    $element['showMinutesLeadingZero'] = array(
-      '#type' => 'checkbox',
-      '#title' => t('Show minutes leading zero'),
-      '#description' => t('Define whether or not to show a leading zero for minutes < 10.'),
-      '#default_value' => $options['showMinutesLeadingZero'],
-    );
-    $element['showPeriod'] = array(
-      '#type' => 'checkbox',
-      '#title' => t('Show period'),
-      '#description' => t('Define whether or not to show AM/PM with selected time.'),
-      '#default_value' => $options['showPeriod'],
     );
     $element['showPeriodLabels'] = array(
       '#type' => 'checkbox',
       '#title' => t('Show period labels'),
       '#description' => t('Define if the AM/PM labels on the left are displayed.'),
       '#default_value' => $options['showPeriodLabels'],
-    );
-    $element['periodSeparator'] = array(
-      '#type' => 'textfield',
-      '#title' => t('Period separator'),
-      '#description' => t('The character to use to separate the time from the time period.'),
-      '#default_value' => $options['periodSeparator'],
     );
     // Define an alternate input to parse selected time to
 //    $form['altField'] = array();
@@ -245,6 +221,7 @@ class DatePopupTimepickerTimepicker extends DatePopupTimepicker {
         'focus' => t('Focus'),
         'button' => t('Button'),
         'both' => t('Both'),
+        'none' => t('None'),
       ),
       '#default_value' => $options['showOn'],
     );
@@ -259,21 +236,6 @@ class DatePopupTimepickerTimepicker extends DatePopupTimepicker {
       '#type' => 'textfield',
       '#title' => t('Minute text'),
       '#default_value' => $options['minuteText'],
-    );
-    $element['amPmText'] = array(
-      '#type' => 'fieldset',
-      '#title' => t('Periods text'),
-      '#collapsible' => FALSE,
-      0 => array(
-        '#type' => 'textfield',
-        '#title' => t('AM'),
-        '#default_value' => $options['amPmText'][0],
-      ),
-      1 => array(
-        '#type' => 'textfield',
-        '#title' => t('PM'),
-        '#default_value' => $options['amPmText'][1],
-      ),
     );
     // Corner of the dialog to position, used with the jQuery UI Position utility if present.
 //    $element['myPosition'] = array();
@@ -326,18 +288,6 @@ class DatePopupTimepickerTimepicker extends DatePopupTimepicker {
       '#title' => t('Rows'),
       '#description' => t('Number of rows for the input tables, minimum 2, makes more sense if you use multiple of 2.'),
       '#default_value' => $options['rows'],
-    );
-    $element['showHours'] = array(
-      '#type' => 'checkbox',
-      '#title' => t('Show hours'),
-      '#description' => t('Define if the hours section is displayed or not. Set to false to get a minute only dialog.'),
-      '#default_value' => $options['showHours'],
-    );
-    $element['showMinutes'] = array(
-      '#type' => 'checkbox',
-      '#title' => t('Show minutes'),
-      '#description' => t('Define if the minutes section is displayed or not. Set to false to get an hour only dialog.'),
-      '#default_value' => $options['showMinutes'],
     );
     $element['minTime'] = array(
       '#type' => 'fieldset',
@@ -469,6 +419,193 @@ class DatePopupTimepickerTimepicker extends DatePopupTimepicker {
     else {
       form_set_value($element['timepicker_options']['rows'], NULL, $form_state);
     }
+
+    // Define format for Date Entry.
+    $input_format = $form_state['values']['instance']['widget']['settings']['input_format'];
+    $granularity = $form_state['values']['field']['settings']['granularity'];
+    $date_granularity = array('year', 'month', 'day');
+    foreach ($granularity as $key => $value) {
+      if (!$value || in_array($key, $date_granularity)) {
+        unset($granularity[$key]);
+      }
+    }
+    $date_entry_format = date_limit_format($input_format, $granularity);
+
+    // If date field expect seconds, we should not show timepicker,
+    // as it not supports seconds entry and will lead to invalid value entry.
+    // s = Seconds with leading zeros.
+    if (stripos($date_entry_format, 's') === FALSE) {
+      // Depending on format, apply the appropriate settings.
+      // We can omit leading zeros setting for hours.
+      // g = 12-hour format of an hour without leading zeros.
+      // G = 24-hour format of an hour without leading zeros.
+      // h = 12-hour format of an hour with leading zeros.
+      // H = 24-hour format of an hour with leading zeros.
+      if (strpos($date_entry_format, 'H') !== FALSE ||
+        strpos($date_entry_format, 'G') !== FALSE) {
+        if (strpos($date_entry_format, 'a') === FALSE) {
+          $values['timepicker_options']['showHours'] = TRUE;
+          $values['timepicker_options']['showPeriod'] = FALSE;
+        }
+        else {
+          drupal_set_message(t('Error occured. Please contact site administrator'), 'error');
+          watchdog('Date popup timepicker', 'Error occured. 24-hour format should not have am/pm time period.', array(), WATCHDOG_ERROR);
+          $values['timepicker_options']['showOn'] = 'none';
+        }
+      }
+      elseif (strpos($date_entry_format, 'h') !== FALSE ||
+        strpos($date_entry_format, 'g') !== FALSE) {
+        if (strpos($date_entry_format, 'a') !== FALSE) {
+          $values['timepicker_options']['showHours'] = TRUE;
+          $values['timepicker_options']['showPeriod'] = TRUE;
+        }
+        else {
+          drupal_set_message(t('Error occured. Please contact site administrator'), 'error');
+          watchdog('Date popup timepicker', 'Error occured. 12-hour format should have am/pm time period.', array(), WATCHDOG_ERROR);
+          $values['timepicker_options']['showOn'] = 'none';
+        }
+      }
+      else {
+        $values['timepicker_options']['showHours'] = FALSE;
+        // Date Field may ask to enter values like :00am, it's not supported by timepicker.
+        if (strpos($date_entry_format, 'a') === FALSE) {
+          $values['timepicker_options']['showPeriod'] = FALSE;
+        }
+        else {
+          drupal_set_message(t("Timepicker can't be used when hours disabled and
+          am/pm period is enabled. To enable timepicker again, go to field settings,
+          enable hours attribute or change date entry format and change 'Show on'
+          setting state."), 'warning');
+          $values['timepicker_options']['showOn'] = 'none';
+        }
+      }
+
+      // If date field expect minutes, show minutes selector.
+      // i = Minutes with leading zeros.
+      if (stripos($date_entry_format, 'i') !== FALSE) {
+        $values['timepicker_options']['showMinutes'] = TRUE;
+      }
+      else {
+        $values['timepicker_options']['showMinutes'] = FALSE;
+      }
+
+      // Options that are not supported by the Date module:
+      // Date module supports only colon as time separator.
+      $values['timepicker_options']['timeSeparator'] = ':';
+      // Date Popup Timepicker supports minutes without leading
+      // zeros, but Date module only uses standard PHP Date options.
+      $values['timepicker_options']['showMinutesLeadingZero'] = FALSE;
+      // Period separator is not supported in Date module.
+      $values['timepicker_options']['periodSeparator'] = '';
+      // Only lowercase am/pm text allowed in Date module.
+      $values['timepicker_options']['amPmText'] = ['am', 'pm'];
+    }
+    else {
+      drupal_set_message(t("Timepicker can't be used with seconds and was
+      disabled. To enable timepicker again, go to field settings, disable
+      seconds attribute and change 'Show on' setting state."), 'warning');
+      $values['timepicker_options']['showOn'] = 'none';
+    }
+
+    // Field validation by ron_s.
+    // See https://www.drupal.org/project/date_popup_timepicker/issues/2561147.
+    if ($values['timepicker_options']['showOn'] != 'none') {
+      $options = $values['timepicker_options'];
+
+      $format = '';
+      if ($options['showHours']) {
+        $format .= $options['showPeriod'] ? 'g' : 'H';
+      }
+
+      if ($options['showHours'] && $options['showMinutes']) {
+        $format .= $options['timeSeparator'] . 'i';
+      }
+      elseif ($options['showMinutes']) {
+        $format .= 'i';
+      }
+      if ($options['periodSeparator']) {
+        $format .= $options['periodSeparator'];
+      }
+      // Date Popup Timepicker supports any period label,
+      // but Date module only uses standard PHP Date options.
+      // a = Lowercase am/pm
+      // A = Uppercase AM/PM
+      // \ = Escape words added as label.
+      $period_label_error = FALSE;
+      if ($options['showPeriod']) {
+        // Capture matches when AM and PM periods text
+        // includes an "am" or "pm" (case insensitive).
+        preg_match('/^(.*)(am)(.*)$/i', $options['amPmText'][0], $am_matches);
+        preg_match('/^(.*)(pm)(.*)$/i', $options['amPmText'][1], $pm_matches);
+        // If either AM or PM periods text do not have a match,
+        // determine if there is a match in one of them.
+        if (empty($am_matches) || empty($pm_matches)) {
+          // If there is an AM periods text format match, use it to determine am/pm case.
+          if (!empty($am_matches)) {
+            if (strtoupper($am_matches[2]) == $am_matches[2]) {
+              $format .= $am_matches[1] . 'A' . $am_matches[3];
+            }
+            else {
+              $format .= $am_matches[1] . 'a' . $am_matches[3];
+            }
+          }
+          // If there is a PM periods text format match, use it to determine am/pm case.
+          elseif (!empty($pm_matches)) {
+            if (strtoupper($pm_matches[2]) == $pm_matches[2]) {
+              $format .= $pm_matches[1] . 'A' . $pm_matches[3];
+            }
+            else {
+              $format .= $pm_matches[1] . 'a' . $pm_matches[3];
+            }
+          }
+          // If there is an AM periods text value, use it to create an escaped am/pm label.
+          elseif (!empty($options['amPmText'][0])) {
+            $format .= preg_replace('/([a-z0-9])/i', '\\\\$1', $options['amPmText'][0]);
+          }
+          // If there is a PM periods text value, use it to create an escaped am/pm label.
+          elseif (!empty($options['amPmText'][1])) {
+            $format .= preg_replace('/([a-z0-9])/i', '\\\\$1', $options['amPmText'][1]);
+          }
+        }
+        // If both AM and PM periods text have matches, check that
+        // preceding and following text for each is consistent.
+        elseif ($am_matches[1] != $pm_matches[1] || $am_matches[3] != $pm_matches[3]) {
+          form_error($element['timepicker_options']['amPmText'], t('Format of AM and PM periods text is inconsistent. Ensure that any text preceding and following the "AM" and "PM" are the same.'));
+          $period_label_error = TRUE;
+        }
+        // If both AM and PM periods text have matches and are consistent,
+        // determine the PHP date format used for am/pm ("A" or "a").
+        else {
+          // Check if both AM and PM periods text are uppercase.
+          if (strtoupper($am_matches[2]) == $am_matches[2] && strtoupper($pm_matches[2]) == $pm_matches[2]) {
+            $format .= $am_matches[1] . 'A' . $am_matches[3];
+          }
+          // Check if either AM or PM periods text is uppercase, while the other is lowercase.
+          elseif ((strtoupper($am_matches[2]) != $am_matches[2] && strtoupper($pm_matches[2]) == $pm_matches[2]) || (strtoupper($am_matches[2]) == $am_matches[2] && strtoupper($pm_matches[2]) != $pm_matches[2])
+          ) {
+            form_error($element['timepicker_options']['amPmText'], t('Format of AM and PM periods text is inconsistent. Ensure "AM" and "PM" are either both uppercase or both lowercase.'));
+            $period_label_error = TRUE;
+          }
+          // Both AM and PM periods text are lowercase.
+          else {
+            $format .= $am_matches[1] . 'a' . $am_matches[3];
+          }
+        }
+      }
+      // Compare Date Entry and Date Popup Timepicker formats.
+      if (!$period_label_error && $format != $date_entry_format) {
+        form_error(
+          $element['timepicker_options'],
+          t(
+            'Date Popup Timepicker (@format) and Date Entry (@date_entry_format) formats do not match. They must have the same format, otherwise data entry errors will occur.',
+            array(
+              '@format' => $format,
+              '@date_entry_format' => $date_entry_format,
+            )
+          )
+        );
+      }
+    }
   }
 
   /**
@@ -479,11 +616,7 @@ class DatePopupTimepickerTimepicker extends DatePopupTimepicker {
     // Convert boolean settings to boolean.
     $boolean = array(
       'showLeadingZero',
-      'showMinutesLeadingZero',
-      'showPeriod',
       'showPeriodLabels',
-      'showHours',
-      'showMinutes',
       'showCloseButton',
       'showNowButton',
       'showDeselectButton',
