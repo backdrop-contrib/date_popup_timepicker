@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @file
  * Date popup timepicker.
@@ -108,7 +109,7 @@ function date_popup_timepicker_form_date_popup_settings_alter(&$form, &$form_sta
 
 /**
  * Implements hook_date_field_instance_settings_form_alter().
- * 
+ *
  * @see _date_field_instance_settings_form()
  */
 function date_popup_timepicker_date_field_instance_settings_form_alter(&$form, $context) {
@@ -134,7 +135,7 @@ function date_popup_timepicker_date_field_instance_settings_form_alter(&$form, $
 
 /**
  * Implements hook_form_FORM_ID_alter().
- * 
+ *
  * Alter field_ui_field_edit_form form to add needed processing on validation
  * and submission.
  */

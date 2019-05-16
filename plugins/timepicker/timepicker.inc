@@ -2,7 +2,7 @@
 
 /**
  * @file
- * jQuery UI Timepicker plugin.
+ * The jQuery UI Timepicker plugin.
  */
 
 $plugin = array(
@@ -13,6 +13,9 @@ $plugin = array(
   ),
 );
 
+/**
+ * Class DatePopupTimepickerTimepicker.
+ */
 class DatePopupTimepickerTimepicker extends DatePopupTimepicker {
 
   /**
@@ -37,12 +40,14 @@ class DatePopupTimepickerTimepicker extends DatePopupTimepicker {
       'periodSeparator' => ' ',
       // Define an alternate input to parse selected time to.
       'altField' => '#alternate_input',
-      // Used as default time when input field is empty or for inline timePicker.
+      // Used as default time when input field is empty
+      // or for inline timePicker.
       // Set to 'now' for the current time, '' for no highlighted time.
       'defaultTime' => 'now',
       // Trigger options.
       // Define when the timepicker is shown.
-      // 'focus': when the input gets focus, 'button' when the button trigger element is clicked.
+      // 'focus': when the input gets focus,
+      // 'button' when the button trigger element is clicked.
       // 'both': when the input gets focus and when the button is clicked.
       'showOn' => 'focus',
       // jQuery selector that acts as button trigger. ex: '#trigger_button'.
@@ -55,20 +60,24 @@ class DatePopupTimepickerTimepicker extends DatePopupTimepicker {
       // Define the locale text for periods.
       'amPmText' => array('AM', 'PM'),
       // Position.
-      // Corner of the dialog to position, used with the jQuery UI Position utility if present.
+      // Corner of the dialog to position,
+      // used with the jQuery UI Position utility if present.
       'myPosition' => 'left top',
       // Corner of the input to position.
       'atPosition' => 'left bottom',
       // Events.
-      // Callback function executed before the timepicker is rendered and displayed.
+      // Callback function executed before
+      // the timepicker is rendered and displayed.
       'beforeShow' => NULL,
       // Define a callback function when an hour / minutes is selected.
       'onSelect' => NULL,
       // Define a callback function when the timepicker is closed.
       'onClose' => NULL,
-      // Define a callback to enable / disable certain hours. ex: function onHourShow(hour).
+      // Define a callback to enable / disable certain hours.
+      // ex: function onHourShow(hour).
       'onHourShow' => NULL,
-      // Define a callback to enable / disable certain minutes. ex: function onMinuteShow(hour, minute).
+      // Define a callback to enable / disable certain minutes.
+      // ex: function onMinuteShow(hour, minute).
       'onMinuteShow' => NULL,
       // Custom hours and minutes.
       'hours' => array(
@@ -87,11 +96,14 @@ class DatePopupTimepickerTimepicker extends DatePopupTimepicker {
         // Optional extra entries for minutes.
         'manual' => array(),
       ),
-      // Number of rows for the input tables, minimum 2, makes more sense if you use multiple of 2.
+      // Number of rows for the input tables, minimum 2,
+      // makes more sense if you use multiple of 2.
       'rows' => 4,
-      // Define if the hours section is displayed or not. Set to false to get a minute only dialog.
+      // Define if the hours section is displayed or not.
+      // Set to false to get a minute only dialog.
       'showHours' => TRUE,
-      // Define if the minutes section is displayed or not. Set to false to get an hour only dialog.
+      // Define if the minutes section is displayed or not.
+      // Set to false to get an hour only dialog.
       'showMinutes' => TRUE,
 
       // Min and Max time.
@@ -205,7 +217,7 @@ class DatePopupTimepickerTimepicker extends DatePopupTimepicker {
       '#default_value' => $options['showPeriodLabels'],
     );
     // Define an alternate input to parse selected time to
-//    $form['altField'] = array();
+    // $form['altField'] = array();
     // @todo Use date_popup element.
     $element['defaultTime'] = array(
       '#type' => 'textfield',
@@ -226,7 +238,7 @@ class DatePopupTimepickerTimepicker extends DatePopupTimepicker {
       '#default_value' => $options['showOn'],
     );
     // jQuery selector that acts as button trigger. ex: '#trigger_button'
-//    $element['button'] = array();
+    // $element['button'] = array();
     $element['hourText'] = array(
       '#type' => 'textfield',
       '#title' => t('Hour text'),
@@ -237,10 +249,11 @@ class DatePopupTimepickerTimepicker extends DatePopupTimepicker {
       '#title' => t('Minute text'),
       '#default_value' => $options['minuteText'],
     );
-    // Corner of the dialog to position, used with the jQuery UI Position utility if present.
-//    $element['myPosition'] = array();
+    // Corner of the dialog to position,
+    // used with the jQuery UI Position utility if present.
+    // $element['myPosition'] = array();
     // Corner of the input to position
-//    $element['atPosition'] = array();
+    // $element['atPosition'] = array();
     $element['hours'] = array(
       '#type' => 'fieldset',
       '#title' => t('Hours'),
@@ -281,7 +294,7 @@ class DatePopupTimepickerTimepicker extends DatePopupTimepicker {
         '#default_value' => $options['minutes']['interval'],
       ),
       // Optional extra entries for minutes
-//      'manual' => array(),
+      // 'manual' => array(),
     );
     $element['rows'] = array(
       '#type' => 'textfield',
@@ -389,8 +402,8 @@ class DatePopupTimepickerTimepicker extends DatePopupTimepicker {
               '@start' => $limits[0],
               '@end' => $limits[1],
             );
-            form_error($element['timepicker_options'][$key][$subkey]
-              , t('%name must be an integer between @start and @end.', $t_args));
+            form_error($element['timepicker_options'][$key][$subkey],
+              t('%name must be an integer between @start and @end.', $t_args));
           }
           else {
             form_set_value($element['timepicker_options'][$key][$subkey], (int) $value, $form_state);
@@ -409,8 +422,8 @@ class DatePopupTimepickerTimepicker extends DatePopupTimepicker {
         $t_args = array(
           '%name' => $element['timepicker_options']['rows']['#title'],
         );
-        form_error($element['timepicker_options']['rows']
-          , t('%name must be an integer greater than 1.', $t_args));
+        form_error($element['timepicker_options']['rows'],
+          t('%name must be an integer greater than 1.', $t_args));
       }
       else {
         form_set_value($element['timepicker_options']['rows'], (int) $value, $form_state);
@@ -467,7 +480,8 @@ class DatePopupTimepickerTimepicker extends DatePopupTimepicker {
       }
       else {
         $values['timepicker_options']['showHours'] = FALSE;
-        // Date Field may ask to enter values like :00am, it's not supported by timepicker.
+        // Date Field may ask to enter values like :00am,
+        // it's not supported by timepicker.
         if (strpos($date_entry_format, 'a') === FALSE) {
           $values['timepicker_options']['showPeriod'] = FALSE;
         }
@@ -540,7 +554,8 @@ class DatePopupTimepickerTimepicker extends DatePopupTimepicker {
         // If either AM or PM periods text do not have a match,
         // determine if there is a match in one of them.
         if (empty($am_matches) || empty($pm_matches)) {
-          // If there is an AM periods text format match, use it to determine am/pm case.
+          // If there is an AM periods text format match,
+          // use it to determine am/pm case.
           if (!empty($am_matches)) {
             if (strtoupper($am_matches[2]) == $am_matches[2]) {
               $format .= $am_matches[1] . 'A' . $am_matches[3];
@@ -549,7 +564,8 @@ class DatePopupTimepickerTimepicker extends DatePopupTimepicker {
               $format .= $am_matches[1] . 'a' . $am_matches[3];
             }
           }
-          // If there is a PM periods text format match, use it to determine am/pm case.
+          // If there is a PM periods text format match,
+          // use it to determine am/pm case.
           elseif (!empty($pm_matches)) {
             if (strtoupper($pm_matches[2]) == $pm_matches[2]) {
               $format .= $pm_matches[1] . 'A' . $pm_matches[3];
@@ -558,11 +574,13 @@ class DatePopupTimepickerTimepicker extends DatePopupTimepicker {
               $format .= $pm_matches[1] . 'a' . $pm_matches[3];
             }
           }
-          // If there is an AM periods text value, use it to create an escaped am/pm label.
+          // If there is an AM periods text value,
+          // use it to create an escaped am/pm label.
           elseif (!empty($options['amPmText'][0])) {
             $format .= preg_replace('/([a-z0-9])/i', '\\\\$1', $options['amPmText'][0]);
           }
-          // If there is a PM periods text value, use it to create an escaped am/pm label.
+          // If there is a PM periods text value,
+          // use it to create an escaped am/pm label.
           elseif (!empty($options['amPmText'][1])) {
             $format .= preg_replace('/([a-z0-9])/i', '\\\\$1', $options['amPmText'][1]);
           }
@@ -580,7 +598,8 @@ class DatePopupTimepickerTimepicker extends DatePopupTimepicker {
           if (strtoupper($am_matches[2]) == $am_matches[2] && strtoupper($pm_matches[2]) == $pm_matches[2]) {
             $format .= $am_matches[1] . 'A' . $am_matches[3];
           }
-          // Check if either AM or PM periods text is uppercase, while the other is lowercase.
+          // Check if either AM or PM periods text is uppercase,
+          // while the other is lowercase.
           elseif ((strtoupper($am_matches[2]) != $am_matches[2] && strtoupper($pm_matches[2]) == $pm_matches[2]) || (strtoupper($am_matches[2]) == $am_matches[2] && strtoupper($pm_matches[2]) != $pm_matches[2])
           ) {
             form_error($element['timepicker_options']['amPmText'], t('Format of AM and PM periods text is inconsistent. Ensure "AM" and "PM" are either both uppercase or both lowercase.'));
@@ -678,7 +697,7 @@ class DatePopupTimepickerTimepicker extends DatePopupTimepicker {
         ),
       );
       // Callback for the array_walk_recursive().
-      $filter = function(&$item, $key, $groups) {
+      $filter = function (&$item, $key, $groups) {
         if (in_array($key, $groups['boolean'], TRUE)) {
           $item = (bool) $item;
         }
