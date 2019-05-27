@@ -119,7 +119,7 @@ class DatePopupTimepicker implements DatePopupTimepickerInterface {
   /**
    * {@inheritdoc}
    */
-  public function processElement($element, &$form_state, $form) {
+  public function processElement(array $element, array &$form_state, array $form) {
     return $element;
   }
 
@@ -133,7 +133,7 @@ class DatePopupTimepicker implements DatePopupTimepickerInterface {
   /**
    * {@inheritdoc}
    */
-  public function fieldSettingsForm($form, $context, $settings = array()) {
+  public function fieldSettingsForm(array $form, array $context, array $settings = array()) {
     return array(
       'timepicker_options' => array(),
     );
@@ -142,21 +142,21 @@ class DatePopupTimepicker implements DatePopupTimepickerInterface {
   /**
    * {@inheritdoc}
    */
-  public function fieldSettingsFormValidate(&$element, &$values, &$form, &$form_state) {
+  public function fieldSettingsFormValidate(array &$element, array &$values, array &$form, array &$form_state) {
     // Do nothing.
   }
 
   /**
    * {@inheritdoc}
    */
-  public function fieldSettingsFormSubmit(&$element, &$values, &$form, &$form_state) {
+  public function fieldSettingsFormSubmit(array &$element, array &$values, array &$form, array &$form_state) {
     // Do nothing.
   }
 
   /**
    * {@inheritdoc}
    */
-  public function processFieldSettings($settings, $element, &$form_state, $form) {
+  public function processFieldSettings(array $settings, array $element, array &$form_state, array $form) {
     return isset($settings['timepicker_options']) ? $settings['timepicker_options'] : array();
   }
 

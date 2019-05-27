@@ -139,7 +139,7 @@ class DatePopupTimepickerTimepicker extends DatePopupTimepicker {
   /**
    * {@inheritdoc}
    */
-  public function processElement($element, &$form_state, $form) {
+  public function processElement(array $element, array &$form_state, array $form) {
     $granularity = date_popup_time_granularity($element);
     $options_default = array(
       'showHours' => in_array('hour', $granularity),
@@ -199,7 +199,7 @@ class DatePopupTimepickerTimepicker extends DatePopupTimepicker {
   /**
    * {@inheritdoc}
    */
-  public function fieldSettingsForm($form, $context, $settings = array()) {
+  public function fieldSettingsForm(array $form, array $context, array $settings = array()) {
     $element = array();
     $defaults = $this->settingsDefaults();
     $options = isset($settings['timepicker_options']) ? $settings['timepicker_options'] : array();
@@ -379,7 +379,7 @@ class DatePopupTimepickerTimepicker extends DatePopupTimepicker {
   /**
    * {@inheritdoc}
    */
-  public function fieldSettingsFormValidate(&$element, &$values, &$form, &$form_state) {
+  public function fieldSettingsFormValidate(array &$element, array &$values, array &$form, array &$form_state) {
     // Validate int hours and minutes settings.
     foreach (array('hours', 'minutes', 'minTime', 'maxTime') as $key) {
       foreach ($values['timepicker_options'][$key] as $subkey => $value) {
@@ -630,7 +630,7 @@ class DatePopupTimepickerTimepicker extends DatePopupTimepicker {
   /**
    * {@inheritdoc}
    */
-  public function fieldSettingsFormSubmit(&$element, &$values, &$form, &$form_state) {
+  public function fieldSettingsFormSubmit(array &$element, array &$values, array &$form, array &$form_state) {
     $new = $values['timepicker_options'];
     // Convert boolean settings to boolean.
     $boolean = array(
@@ -664,7 +664,7 @@ class DatePopupTimepickerTimepicker extends DatePopupTimepicker {
   /**
    * {@inheritdoc}
    */
-  public function processFieldSettings($settings, $element, &$form_state, $form) {
+  public function processFieldSettings(array $settings, array $element, array &$form_state, array $form) {
     $options = isset($settings['timepicker_options']) ? $settings['timepicker_options'] : array();
     if (!empty($options)) {
       // @todo Define this list somewhere else since it's used in the DatePopupTimepickerTimepicker::fieldSettingsFormSubmit() as well.
