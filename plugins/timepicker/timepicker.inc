@@ -132,6 +132,8 @@ class DatePopupTimepickerTimepicker extends DatePopupTimepicker {
       'showDeselectButton' => FALSE,
       // Text for the deselect button.
       'deselectButtonText' => 'Deselect',
+      // Timepicker type.
+      'timepickerType' => 'popup',
     );
     return $settings;
   }
@@ -219,6 +221,15 @@ class DatePopupTimepickerTimepicker extends DatePopupTimepicker {
     // Define an alternate input to parse selected time to
     // $form['altField'] = array();
     // @todo Use date_popup element.
+    $element['timepickerType'] = array(
+      '#title' => t('Choose how to render the timepicker'),
+      '#type' => 'radios',
+      '#options' => array(
+        'popup' => t('Popup'),
+        'inline' => t('Inline'),
+      ),
+      '#default_value' => $options['timepickerType'],
+    );
     $element['defaultTime'] = array(
       '#type' => 'textfield',
       '#title' => t('Default time'),

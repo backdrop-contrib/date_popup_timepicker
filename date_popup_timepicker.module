@@ -65,6 +65,21 @@ function date_popup_timepicker_date_popup_element_process($element, &$form_state
 
     $element = $handler->processElement($element, $form_state, $form);
 
+    if ($element['#timepicker_options']['timepickerType'] == 'inline') {
+      $time_id = $element['time']['#id'];
+      $name = $name . '_inline';
+      // Copy original time widget.
+      $element['time-hidden'] = $element['time'];
+      $element['time-hidden']['#id'] = $time_id . '-hidden';
+      // Add markup wrapper to which timepicker will be attached.
+      $element['time']['#type'] = 'markup';
+      $element['time']['#markup'] = '<div id="' . $time_id . '" ' . drupal_attributes($element['time']['#attributes']) . '></div>';
+      // Saving name of real input field in settings.
+      $element['#timepicker_options']['altField'] = '#' . $time_id . '-hidden';
+      // Set existing value as default for correct working of timepicker.
+      $element['#timepicker_options']['defaultTime'] = $element['time']['#value'] ? $element['time']['#value'] : $element['#timepicker_options']['defaultTime'];
+    }
+
     // #id should be there...
     $id = $element['time']['#id'];
     $js_settings = array();
