@@ -65,7 +65,7 @@ function date_popup_timepicker_date_popup_element_process($element, &$form_state
 
     $element = $handler->processElement($element, $form_state, $form);
 
-    if ($element['#timepicker_options']['timepickerType'] == 'inline') {
+    if (isset($element['#timepicker_options']['timepickerType']) && $element['#timepicker_options']['timepickerType'] == 'inline') {
       $time_id = $element['time']['#id'];
       $name = $name . '_inline';
       // Copy original time widget.
