@@ -1,5 +1,5 @@
 (function($) {
-  Drupal.behaviors.DatePopupTimepicker = {
+  Backdrop.behaviors.DatePopupTimepicker = {
     attach: function(context, settings) {
       for (var id in settings.datePopup) {
         $('#'+ id).each(function() {

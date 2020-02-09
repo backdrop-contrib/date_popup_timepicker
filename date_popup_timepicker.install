@@ -5,13 +5,12 @@
  * Installation hooks and helper functions.
  */
 
+
 /**
- * Implements hook_uninstall().
+ * Implements hook_update_N().
  */
-function date_popup_timepicker_uninstall() {
-  // Switch date_popup_timepicker variable to default state
-  // in case module's timepicker was used.
-  if (variable_get('date_popup_timepicker') === 'timepicker') {
-    variable_del('date_popup_timepicker');
-  }
+function date_popup_timepicker_update_1000() {
+  $config = config('date_popup_timepicker.settings');
+  $config->set('date_popup_timepicker', update_variable_get('date_popup_timepicker', 'timepicker'));
+  update_variable_del('date_popup_timepicker');
 }

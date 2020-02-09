@@ -5,14 +5,6 @@
  * The jQuery UI Timepicker plugin.
  */
 
-$plugin = array(
-  'title' => t('jQuery UI Timepicker'),
-  'description' => t('Provides jQuery UI Timepicker integration'),
-  'handler' => array(
-    'class' => 'DatePopupTimepickerTimepicker',
-  ),
-);
-
 /**
  * Class DatePopupTimepickerTimepicker.
  */
@@ -105,7 +97,6 @@ class DatePopupTimepickerTimepicker extends DatePopupTimepicker {
       // Define if the minutes section is displayed or not.
       // Set to false to get an hour only dialog.
       'showMinutes' => TRUE,
-
       // Min and Max time.
       // Set the minimum time selectable by the user, disable hours and minutes
       // previous to min time.
@@ -142,7 +133,7 @@ class DatePopupTimepickerTimepicker extends DatePopupTimepicker {
    * {@inheritdoc}
    */
   public function processElement(array $element, array &$form_state, array $form) {
-    $granularity = date_popup_time_granularity($element);
+    $granularity = _date_popup_time_granularity($element);
     $options_default = array(
       'showHours' => in_array('hour', $granularity),
       'showMinutes' => in_array('minute', $granularity),
@@ -152,9 +143,9 @@ class DatePopupTimepickerTimepicker extends DatePopupTimepicker {
     $element['#attached']['library'][] = array('system', 'ui.widget');
 
     // Add Timepicker library.
-    $element['#attached']['libraries_load'][] = array('timepicker');
+    $element['#attached']['library'][] = array('date_popup_timepicker', 'timepicker');
     // @todo is it the best place for plugin specific .js?
-    $element['#attached']['js'][] = drupal_get_path('module', 'date_popup_timepicker') . "/js/date_popup_timepicker.timepicker.js";
+    $element['#attached']['js'][] = backdrop_get_path('module', 'date_popup_timepicker') . "/js/date_popup_timepicker.timepicker.js";
 
     return $element;
   }
@@ -165,38 +156,23 @@ class DatePopupTimepickerTimepicker extends DatePopupTimepicker {
   public function librariesInfo() {
     $libraries = array();
     $libraries['timepicker'] = array(
-      'name' => 'jQuery UI Timepicker',
-      'vendor url' => 'https://fgelinas.com/code/timepicker',
-      'download url' => 'https://fgelinas.com/code/timepicker/releases/jquery-ui-timepicker-0.3.3.zip',
-      'version arguments' => array(
-        'file' => 'jquery.ui.timepicker.js',
-        'pattern' => '/version\: \"(\d\.\d.\d)\"/',
-        'lines' => 43,
+      'title' => 'jQuery UI Timepicker',
+      'website' => 'https://fgelinas.com/code/timepicker',
+      'version' => '0.3.3',
+      'js' => array(
+        backdrop_get_path('module', 'date_popup_timepicker') . '/timepicker/jquery.ui.timepicker.js' => array(),
       ),
-      'files' => array(
-        'js' => array(
-          'jquery.ui.timepicker.js',
-        ),
-        'css' => array(
-          'jquery.ui.timepicker.css',
-        ),
-      ),
-      'variants' => array(
-        'source' => array(
-          'files' => array(
-            'js' => array(
-              'jquery.ui.timepicker.js',
-            ),
-            'css' => array(
-              'jquery.ui.timepicker.css',
-            ),
-          ),
+      'css' => array(
+        backdrop_get_path('module', 'date_popup_timepicker') . '/timepicker/jquery.ui.timepicker.css' => array(
+          'type' => 'file',
+          'media' => 'screen',
         ),
       ),
     );
 
     return $libraries;
   }
+
 
   /**
    * {@inheritdoc}
@@ -472,7 +448,7 @@ class DatePopupTimepickerTimepicker extends DatePopupTimepicker {
           $values['timepicker_options']['showPeriod'] = FALSE;
         }
         else {
-          drupal_set_message(t('Error occured. Please contact site administrator'), 'error');
+          backdrop_set_message(t('Error occured. Please contact site administrator'), 'error');
           watchdog('Date popup timepicker', 'Error occured. 24-hour format should not have am/pm time period.', array(), WATCHDOG_ERROR);
           $values['timepicker_options']['showOn'] = 'none';
         }
@@ -484,7 +460,7 @@ class DatePopupTimepickerTimepicker extends DatePopupTimepicker {
           $values['timepicker_options']['showPeriod'] = TRUE;
         }
         else {
-          drupal_set_message(t('Error occured. Please contact site administrator'), 'error');
+          backdrop_set_message(t('Error occured. Please contact site administrator'), 'error');
           watchdog('Date popup timepicker', 'Error occured. 12-hour format should have am/pm time period.', array(), WATCHDOG_ERROR);
           $values['timepicker_options']['showOn'] = 'none';
         }
@@ -497,7 +473,7 @@ class DatePopupTimepickerTimepicker extends DatePopupTimepicker {
           $values['timepicker_options']['showPeriod'] = FALSE;
         }
         else {
-          drupal_set_message(t("Timepicker can't be used when hours disabled and
+          backdrop_set_message(t("Timepicker can't be used when hours disabled and
           am/pm period is enabled. To enable timepicker again, go to field settings,
           enable hours attribute or change date entry format and change 'Show on'
           setting state."), 'warning');
@@ -526,7 +502,7 @@ class DatePopupTimepickerTimepicker extends DatePopupTimepicker {
       $values['timepicker_options']['amPmText'] = ['am', 'pm'];
     }
     else {
-      drupal_set_message(t("Timepicker can't be used with seconds and was
+      backdrop_set_message(t("Timepicker can't be used with seconds and was
       disabled. To enable timepicker again, go to field settings, disable
       seconds attribute and change 'Show on' setting state."), 'warning');
       $values['timepicker_options']['showOn'] = 'none';
