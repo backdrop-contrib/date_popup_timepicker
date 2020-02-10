@@ -30,7 +30,7 @@ function date_popup_timepicker_date_popup_element_process($element, &$form_state
   // Also check if used timepicker is module's timepicker (we can't check this
   // in hook_element_info_alter() implementation because of caching).
 
-$element['#timepicker'] = 'timepicker';
+  $element['#timepicker'] = 'timepicker';
   if (!empty($element['time']) && ($handler = date_popup_timepicker_get_timepicker_handler($element['#timepicker']))) {
     $name = $element['#timepicker'];
     // Date field widgets contain #field and #instance properties.
@@ -49,7 +49,7 @@ $element['#timepicker'] = 'timepicker';
     $element = $handler->processElement($element, $form_state, $form);
 
     if (isset($element['#timepicker_options']['timepickerType']) && $element['#timepicker_options']['timepickerType'] == 'inline') {
-      $time_id = $element['time']['#id'];
+      $time_id = $element['#id'] . '-time';
       $name = $name . '_inline';
       // Copy original time widget.
       $element['time-hidden'] = $element['time'];
@@ -64,7 +64,7 @@ $element['#timepicker'] = 'timepicker';
     }
 
     // #id should be there...
-    $id = $element['time']['#id'];
+    $id = $element['#id'] . '-time';
     $js_settings = array();
     $js_settings['datePopup'][$id] = array(
       'func' => 'date_popup_timepicker__' . $name,
@@ -246,4 +246,8 @@ function date_popup_timepicker_autoload_info() {
     'DatePopupTimepicker' => 'includes/date_popup_timepicker.inc',
     'DatePopupTimepickerTimepicker' => 'plugins/timepicker/timepicker.inc',
   );
+}
+
+function date_popup_timepicker_js_alter(&$javascript) {
+  $javascript[backdrop_get_path('module', 'date') . '/js/date-popup.js']['data'] = backdrop_get_path('module', 'date_popup_timepicker') . '/js/date-popup.js';
 }
