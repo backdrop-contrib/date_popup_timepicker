@@ -54,4 +54,14 @@
 /* the deselect button */
 .ui-timepicker .ui-timepicker-deselect { float: left; }
 
+/* make hours and minutes look different */
+td.ui-timepicker-minutes table.ui-timepicker {
+  background: #eee;
+}
 
+/* make a single td glow on hover with the same color as dates calendar */
+.ui-timepicker table tr table tr td:hover {
+  border: none;
+  outline: 1px solid #ED5;
+  background-color: #FE6;
+}
