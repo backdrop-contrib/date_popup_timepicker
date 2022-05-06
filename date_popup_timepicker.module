@@ -248,6 +248,11 @@ function date_popup_timepicker_autoload_info() {
   );
 }
 
+/**
+ * Implements hook_js_alter().
+ */
 function date_popup_timepicker_js_alter(&$javascript) {
-  $javascript[backdrop_get_path('module', 'date') . '/js/date-popup.js']['data'] = backdrop_get_path('module', 'date_popup_timepicker') . '/js/date-popup.js';
+  if (isset($javascript['core/modules/date/js/date-popup.js']['data'])) {
+    $javascript['core/modules/date/js/date-popup.js']['data'] = backdrop_get_path('module', 'date_popup_timepicker') . '/js/date-popup.js';
+  }
 }
