@@ -2,6 +2,8 @@ name = Date popup timepicker
 description = Adds a new timepicker option for datetime fields, providing a better ui for the timepicker.
 backdrop = 1.x
 type = module
-package = Date/Time
-php = 5.3
-configure = admin/config/date/date_popup
+package = User interface
+tags[] = Dates
+dependencies[] = date
+
+
