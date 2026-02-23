@@ -12,7 +12,7 @@
 function date_popup_timepicker_element_info_alter(&$type) {
   // Add processing to date_popup element to handle module's timepicker.
   $type['date_popup']['#process'][] = 'date_popup_timepicker_date_popup_element_process';
-  // Add posibility to pass some options to js plugin
+  // Add possibility to pass some options to js plugin
   // like #datepicker_options is used by default.
   // @see date_popup_element_info()
   if (!isset($type['date_popup']['#timepicker_options'])) {
