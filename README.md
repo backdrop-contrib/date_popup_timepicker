@@ -25,7 +25,7 @@ INSTALLATION
 MAINTAINERS
 -----------
 
-* [Richard Peacock](https://github.com/swampopus)
+* [swampopus](https://github.com/swampopus)
 * Seeking additional maintainers.
 
 CREDITS
